@@ -61,4 +61,10 @@ extension AgentViewController: AgentControllerDelegate {
         guard let character = agentController.agent?.character else { return }
         resizeWindow(toFit: character, animated: true)
     }
+    
+    func handleOpacityChange() {
+        guard let window = view.superview?.window as? AgentWindow else { return }
+        window.unfocusedAlpha = agentController.opacity
+        window.applyAlpha(isForeground: window.isKeyWindow)
+    }
 }

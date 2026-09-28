@@ -68,11 +68,11 @@ class AgentViewController: NSViewController {
 
 extension AgentViewController {
     override func mouseEntered(with event: NSEvent) {
-        self.view.superview?.window?.alphaValue = 1.0
+        (view.superview?.window as? AgentWindow)?.applyAlpha(isForeground: true)
     }
     
     override func mouseExited(with event: NSEvent) {
-        self.view.superview?.window?.alphaValue = 0.5
+        (view.superview?.window as? AgentWindow)?.applyAlpha(isForeground: false)
     }
     
     @objc func animateAction() {

@@ -15,6 +15,9 @@ class AgentController {
     /// Zoom factors offered in the status bar menu. 1.0 keeps the current size.
     static let scalePresets: [CGFloat] = [0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
     
+    /// Alpha values offered in the status bar menu. 1.0 never dims the window.
+    static let opacityPresets: [CGFloat] = [0.25, 0.5, 0.75, 1.0]
+    
     var isMuted = false
     let player = AVPlayer()
     
@@ -24,6 +27,7 @@ class AgentController {
     var delegate: (any AgentControllerDelegate)?
     var isHidden = true
     private(set) var scale: CGFloat = 1.0
+    private(set) var opacity: CGFloat = 0.5
     
     init() {
     }
@@ -114,5 +118,11 @@ class AgentController {
         self.scale = scale
         agentView?.agentScale = scale
         delegate?.handleScaleChange()
+    }
+    
+    func setOpacity(_ opacity: CGFloat) {
+        guard opacity != self.opacity else { return }
+        self.opacity = opacity
+        delegate?.handleOpacityChange()
     }
 }

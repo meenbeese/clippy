@@ -15,6 +15,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     var agentsMenuItem: NSMenuItem?
     var zoomMenuItem: NSMenuItem?
+    var opacityMenuItem: NSMenuItem?
     static var agentController: AgentController?
     var lastUsedAgent: String?
     
@@ -89,17 +90,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return zoomMenu
     }
     
+    func createOpacityMenu() -> NSMenu {
+        let opacityMenu = NSMenu(title: "Opacity")
+        let opacity = AppDelegate.agentController?.opacity ?? 0.5
+        
+        for preset in AgentController.opacityPresets {
+            let item = NSMenuItem(title: "\(Int((preset * 100).rounded()))%",
+                                  action: #selector(setOpacityAction(sender:)),
+                                  keyEquivalent: "")
+            item.representedObject = preset
+            item.state = (preset == opacity) ? .on : .off
+            opacityMenu.addItem(item)
+        }
+        return opacityMenu
+    }
+    
     func setupStatusBarMenu() {
         // Status bar menu
         let statusBarMenu = NSMenu(title: "Clippy")
         agentsMenuItem = NSMenuItem(title: "Agents", action: nil, keyEquivalent: "")
         zoomMenuItem = NSMenuItem(title: "Zoom", action: nil, keyEquivalent: "")
-        guard let menuItem = agentsMenuItem, let zoomItem = zoomMenuItem else  { return }
+        opacityMenuItem = NSMenuItem(title: "Opacity", action: nil, keyEquivalent: "")
+        guard let menuItem = agentsMenuItem,
+              let zoomItem = zoomMenuItem,
+              let opacityItem = opacityMenuItem else  { return }
         
         statusBarMenu.addItem(withTitle: "Show", action: #selector(showAction(sender:)), keyEquivalent: "")
         statusBarMenu.addItem(withTitle: "Hide", action: #selector(hideAction(sender:)), keyEquivalent: "")
         statusBarMenu.addItem(withTitle: "Mute", action: #selector(toggleMuteAction(sender:)), keyEquivalent: "")
         statusBarMenu.addItem(zoomItem)
+        statusBarMenu.addItem(opacityItem)
         statusBarMenu.addItem(NSMenuItem.separator())
         statusBarMenu.addItem(menuItem)
         statusBarMenu.addItem(withTitle: "Show in Finder",
@@ -116,6 +136,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarMenu.setSubmenu(createAgentsMenu(), for: menuItem)
         // Zoom menu
         statusBarMenu.setSubmenu(createZoomMenu(), for: zoomItem)
+        // Opacity menu
+        statusBarMenu.setSubmenu(createOpacityMenu(), for: opacityItem)
                 statusItem?.menu = statusBarMenu
     }
     
@@ -173,6 +195,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
               let scale = menuItem.representedObject as? CGFloat else { return }
         AppDelegate.agentController?.setScale(scale)
         zoomMenuItem?.submenu = createZoomMenu()
+    }
+    
+    @objc func setOpacityAction(sender: AnyObject) {
+        guard let menuItem = sender as? NSMenuItem,
+              let opacity = menuItem.representedObject as? CGFloat else { return }
+        AppDelegate.agentController?.setOpacity(opacity)
+        opacityMenuItem?.submenu = createOpacityMenu()
     }
     
     @objc func selectAgent(sender: AnyObject) {
