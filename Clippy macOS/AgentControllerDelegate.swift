@@ -8,6 +8,7 @@
 
 import Cocoa
 
+@MainActor
 protocol AgentControllerDelegate {
     func willLoadAgent(agent: Agent)
     func didLoadAgent(agent: Agent)

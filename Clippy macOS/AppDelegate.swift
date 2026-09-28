@@ -8,6 +8,7 @@
 
 import Cocoa
 
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
     let applicationName = "Clippy"
     var window: NSWindow?
@@ -153,8 +154,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         guard let menuItem = sender as? NSMenuItem else { return }
         let name = menuItem.title.lowercased()
         
-        if let isVisible = window?.isVisible, isVisible == true {
-            try? AppDelegate.agentController?.load(name: name)
+        if window?.isVisible == true {
+            AppDelegate.agentController?.load(name: name)
             if let animation = AppDelegate.agentController?.agent?.findAnimation("Show") {
                 AppDelegate.agentController?.play(animation: animation)
             }

@@ -10,19 +10,18 @@ import Cocoa
 import AVKit
 import SpriteKit
 
+@MainActor
 class AgentController {
     /// Zoom factors offered in the status bar menu. 1.0 keeps the current size.
     static let scalePresets: [CGFloat] = [0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
     
     var isMuted = false
-    var player: AVPlayer = {
-        return AVPlayer()
-    }()
+    let player = AVPlayer()
     
     var agent: Agent?
     var agentView: AgentView?
     
-    var delegate: AgentControllerDelegate?
+    var delegate: (any AgentControllerDelegate)?
     var isHidden = true
     private(set) var scale: CGFloat = 1.0
     
@@ -34,19 +33,22 @@ class AgentController {
         self.agentView = agentView
     }
     
-    func load(name: String) throws {
-        print(name)
-        guard let agent = Agent(resourceName: name) else { return }
+    /// - Returns: `false`, if no agent with that name could be read.
+    @discardableResult
+    func load(name: String) -> Bool {
+        guard let agent = Agent(resourceName: name) else { return false }
         delegate?.willLoadAgent(agent: agent)
         self.agent = agent
         showInitialFrame()
         delegate?.didLoadAgent(agent: agent)
+        return true
     }
     
     func audioActionForFrame(frame: AgentFrame) -> SKAction? {
-        guard let agent = agent, let soundIndex = frame.soundIndex else { return nil }
+        guard let agent, let soundIndex = frame.soundIndex else { return nil }
         let soundURL = agent.soundURL(forIndex: soundIndex)
-        let action = SKAction.run {
+        let action = SKAction.run { [weak self] in
+            guard let self else { return }
             let playerItem = AVPlayerItem(url: soundURL)
             self.player.replaceCurrentItem(with: playerItem)
             self.player.play()
@@ -56,40 +58,46 @@ class AgentController {
     }
     
     func showInitialFrame() {
-        guard let agent = agent else { return }
+        guard let agent else { return }
         self.agentView?.agentSprite.texture = SKTexture(cgImage: try! agent.textureAtIndex(index: 0))
     }
     
+    /// Cutting the frames out of the sprite map and merging them is the expensive
+    /// part, so it runs off the main actor. `SKTexture` is not `Sendable`, so only
+    /// the `CGImage`s cross over and the textures are built back on the main actor.
     func play(animation: AgentAnimation, withSoundEnabled soundEnabled: Bool = true, completion: (() -> Void)? = nil) {
-        guard let agent = agent else { return }
-        print(animation.name)
+        guard let agent else { return }
         
-        DispatchQueue.global(qos: .background).async {
-            var actions: [SKAction] = []
+        /// All three arrays below are derived from `frames`, so they always share its count.
+        let frames = animation.frames
+        let durations = frames.map(\.durationInSeconds)
+        let soundActions: [SKAction?] = soundEnabled ? frames.map(audioActionForFrame(frame:)) : []
+        
+        Task { @MainActor [weak self] in
+            let images = await Task.detached(priority: .userInitiated) {
+                frames.map { agent.imageForFrame($0) }
+            }.value
             
-            for frame in animation.frames {
-                if soundEnabled, let audioAction = self.audioActionForFrame(frame: frame) {
-                    actions.append(audioAction)
+            guard let self else { return }
+            
+            var actions: [SKAction] = []
+            for (index, image) in images.enumerated() {
+                if let soundAction = soundActions[index] {
+                    actions.append(soundAction)
                 }
-                
-                let texture = SKTexture(cgImage: agent.imageForFrame(frame))
+                let texture = SKTexture(cgImage: image)
                 texture.filteringMode = .nearest
-                let action = SKAction.animate(with: [texture], timePerFrame: frame.durationInSeconds)
-                actions.append(action)
+                actions.append(SKAction.animate(with: [texture], timePerFrame: durations[index]))
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now(), execute: {
-                self.agentView?.agentSprite.removeAllActions()
-                self.agentView?.agentSprite.run(SKAction.sequence(actions), completion: {
-                    completion?()
-                })
-            })
+            self.agentView?.agentSprite.removeAllActions()
+            await self.agentView?.agentSprite.run(SKAction.sequence(actions))
+            completion?()
         }
     }
     
     func animate() {
-        guard let agent = agent else { return }
-        let animation = agent.animations.randomElement()!
+        guard let animation = agent?.animations.randomElement() else { return }
         play(animation: animation)
     }
     

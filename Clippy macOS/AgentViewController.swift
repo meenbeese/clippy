@@ -45,8 +45,8 @@ class AgentViewController: NSViewController {
         
         let lastUsedName = (NSApplication.shared.delegate as? AppDelegate)?.lastUsedAgent
         let name = lastUsedName ?? Agent.randomAgentName()
-        if let name = name {
-            try? agentController.load(name: name)
+        if let name {
+            agentController.load(name: name)
             agentController.show()
         }
     }
@@ -81,15 +81,15 @@ extension AgentViewController {
     
     @objc func chooseAssistantAction() {
         guard let name = Agent.randomAgentName() else { return }
-        try? agentController.load(name: name)
+        agentController.load(name: name)
     }
     
     override var acceptsFirstResponder: Bool {
-        return true
+        true
     }
     
     override func becomeFirstResponder() -> Bool {
-        return true
+        true
     }
     
     override func keyDown(with event: NSEvent) {
@@ -102,7 +102,7 @@ extension AgentViewController {
             agentController.animate()
         case 36: // Return
             guard let name = Agent.randomAgentName() else { return }
-            try? agentController.load(name: name)
+            agentController.load(name: name)
             agentController.show()
         case 124: // Arrow Right Key
             guard let animation = agent.findAnimation("LookLeft") else { break }
@@ -159,7 +159,6 @@ extension AgentViewController {
     
     @objc func optionsAction(sender: AnyObject) {
         let viewController = BalloonViewController(nibName: nil, bundle: nil)
-        print(viewController)
         let popOver = NSPopover()
         popOver.behavior = .semitransient
         popOver.contentSize = CGSize(width: 200, height: 300)

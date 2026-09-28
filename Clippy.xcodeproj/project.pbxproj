@@ -248,7 +248,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastSwiftUpdateCheck = 1100;
+				LastSwiftUpdateCheck = 2700;
 				LastUpgradeCheck = 2700;
 				ORGANIZATIONNAME = Devran;
 				TargetAttributes = {
@@ -495,7 +495,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.devranuenal.Clippy;
 				PRODUCT_NAME = Clippy;
 				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEXTURE_ATLAS_MAXIMUM_SIZE = 4096x4096;
 			};
@@ -516,7 +516,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.devranuenal.Clippy;
 				PRODUCT_NAME = Clippy;
 				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEXTURE_ATLAS_MAXIMUM_SIZE = 4096x4096;
 				VALIDATE_PRODUCT = YES;
@@ -543,7 +543,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.meenbeese.clippy;
 				PRODUCT_NAME = Clippy;
 				SDKROOT = macosx;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -567,7 +567,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.meenbeese.clippy;
 				PRODUCT_NAME = Clippy;
 				SDKROOT = macosx;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
