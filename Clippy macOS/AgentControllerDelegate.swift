@@ -14,4 +14,5 @@ protocol AgentControllerDelegate {
     
     func handleHide()
     func handleShow()
+    func handleScaleChange()
 }

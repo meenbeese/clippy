@@ -33,6 +33,22 @@ class AgentView: NSView {
         return sprite
     }()
     
+    /// Zoom factor relative to the size the agent already has.
+    ///
+    /// `SKSpriteNode.size` only affects `frame` and physics bodies, never how the
+    /// texture is drawn, so scaling has to go through `xScale`/`yScale`.
+    var agentScale: CGFloat = 1.0 {
+        didSet {
+            guard agentScale != oldValue else { return }
+            applyScale()
+        }
+    }
+    
+    private func applyScale() {
+        agentSprite.xScale = agentScale
+        agentSprite.yScale = agentScale
+    }
+    
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true
@@ -43,6 +59,7 @@ class AgentView: NSView {
         setupConstraints()
         
         skView.presentScene(scene)
+        applyScale()
     }
     
     required init?(coder: NSCoder) {

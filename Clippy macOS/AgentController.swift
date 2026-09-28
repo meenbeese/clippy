@@ -11,6 +11,9 @@ import AVKit
 import SpriteKit
 
 class AgentController {
+    /// Zoom factors offered in the status bar menu. 1.0 keeps the current size.
+    static let scalePresets: [CGFloat] = [0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
+    
     var isMuted = false
     var player: AVPlayer = {
         return AVPlayer()
@@ -21,6 +24,7 @@ class AgentController {
     
     var delegate: AgentControllerDelegate?
     var isHidden = true
+    private(set) var scale: CGFloat = 1.0
     
     init() {
     }
@@ -95,5 +99,12 @@ class AgentController {
     
     func show() {
         delegate?.handleShow()
+    }
+    
+    func setScale(_ scale: CGFloat) {
+        guard scale != self.scale else { return }
+        self.scale = scale
+        agentView?.agentScale = scale
+        delegate?.handleScaleChange()
     }
 }

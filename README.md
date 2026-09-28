@@ -30,7 +30,7 @@ The `SpriteKit`-Framework is used to animate through Clippy's sprite map.
 * [x] Support for other agents
 * [x] Agent picker 
 * [x] Menu bar Item
-* [ ] Original size / Zoom
+* [x] Original size / Zoom
 * [ ] Actions
   * [x] Hide
   * [x] Show

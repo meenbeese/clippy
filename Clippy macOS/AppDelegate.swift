@@ -13,6 +13,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow?
     var statusItem: NSStatusItem?
     var agentsMenuItem: NSMenuItem?
+    var zoomMenuItem: NSMenuItem?
     static var agentController: AgentController?
     var lastUsedAgent: String?
     
@@ -72,16 +73,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return agentsMenu
     }
     
+    func createZoomMenu() -> NSMenu {
+        let zoomMenu = NSMenu(title: "Zoom")
+        let scale = AppDelegate.agentController?.scale ?? 1.0
+        
+        for preset in AgentController.scalePresets {
+            let item = NSMenuItem(title: "\(Int((preset * 100).rounded()))%",
+                                  action: #selector(setScaleAction(sender:)),
+                                  keyEquivalent: "")
+            item.representedObject = preset
+            item.state = (preset == scale) ? .on : .off
+            zoomMenu.addItem(item)
+        }
+        return zoomMenu
+    }
+    
     func setupStatusBarMenu() {
         // Status bar menu
         let statusBarMenu = NSMenu(title: "Clippy")
         agentsMenuItem = NSMenuItem(title: "Agents", action: nil, keyEquivalent: "")
+        zoomMenuItem = NSMenuItem(title: "Zoom", action: nil, keyEquivalent: "")
+        guard let menuItem = agentsMenuItem, let zoomItem = zoomMenuItem else  { return }
         
         statusBarMenu.addItem(withTitle: "Show", action: #selector(showAction(sender:)), keyEquivalent: "")
         statusBarMenu.addItem(withTitle: "Hide", action: #selector(hideAction(sender:)), keyEquivalent: "")
         statusBarMenu.addItem(withTitle: "Mute", action: #selector(toggleMuteAction(sender:)), keyEquivalent: "")
+        statusBarMenu.addItem(zoomItem)
         statusBarMenu.addItem(NSMenuItem.separator())
-        guard let menuItem = agentsMenuItem else  { return }
         statusBarMenu.addItem(menuItem)
         statusBarMenu.addItem(withTitle: "Show in Finder",
                            action: #selector(openFolderAction(sender:)),
@@ -91,8 +109,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Agents menu
         statusBarMenu.setSubmenu(createAgentsMenu(), for: menuItem)
-        
-        statusItem?.menu = statusBarMenu
+        // Zoom menu
+        statusBarMenu.setSubmenu(createZoomMenu(), for: zoomItem)
+                statusItem?.menu = statusBarMenu
     }
     
     @objc func quitAction(sender: AnyObject) {
@@ -121,6 +140,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let newValue = !isMuted
         AppDelegate.agentController?.isMuted = newValue
         menuItem.state = newValue ? .on : .off
+    }
+    
+    @objc func setScaleAction(sender: AnyObject) {
+        guard let menuItem = sender as? NSMenuItem,
+              let scale = menuItem.representedObject as? CGFloat else { return }
+        AppDelegate.agentController?.setScale(scale)
+        zoomMenuItem?.submenu = createZoomMenu()
     }
     
     @objc func selectAgent(sender: AnyObject) {
