@@ -44,10 +44,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let statusBar = NSStatusBar.system
         statusItem = statusBar.statusItem(withLength: NSStatusItem.squareLength)
         if let button = statusItem?.button {
-            button.title = "📎"
+            button.imagePosition = .imageOnly
+            button.toolTip = applicationName
+            setStatusBarIcon(on: button)
         }
         
         setupStatusBarMenu()
+    }
+    
+    /// An SF Symbol keeps the icon legible against both the light and the dark
+    /// menu bar. `NSImage(systemSymbolName:)` already hands back a template
+    /// image, but the flag is set explicitly — template rendering is what makes
+    /// AppKit tint it.
+    private func setStatusBarIcon(on button: NSStatusBarButton) {
+        let configuration = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
+        let symbol = NSImage(systemSymbolName: "paperclip",
+                             accessibilityDescription: applicationName)?
+            .withSymbolConfiguration(configuration)
+        symbol?.isTemplate = true
+        button.image = symbol
     }
     
     func createAgentsMenu() -> NSMenu {
@@ -108,7 +123,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func setupStatusBarMenu() {
         // Status bar menu
         let statusBarMenu = NSMenu(title: "Clippy")
-        agentsMenuItem = NSMenuItem(title: "Agents", action: nil, keyEquivalent: "")
+        agentsMenuItem = NSMenuItem(title: "Sprites", action: nil, keyEquivalent: "")
         zoomMenuItem = NSMenuItem(title: "Zoom", action: nil, keyEquivalent: "")
         opacityMenuItem = NSMenuItem(title: "Opacity", action: nil, keyEquivalent: "")
         guard let menuItem = agentsMenuItem,
