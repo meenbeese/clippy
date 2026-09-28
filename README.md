@@ -17,35 +17,7 @@ The `SpriteKit`-Framework is used to animate through Clippy's sprite map.
 3. Click `📎` → `Show in Finder` in the menu bar
 4. Unzip all files by running `./agents-unzip.sh`
 5. Click `📎` → `Reload`
-6. Pick an Agent under `📎` → `Agents` → `…`
-
-
-## Todos
-
-* [x] Animations (Right-Click → Animate! or press the Space bar)
-* [x] Always on top
-* [x] Sounds
-  * [x] Mute / Unmute
-* [x] Transparent when out of focus
-* [x] Support for other agents
-* [x] Agent picker 
-* [x] Menu bar Item
-* [x] Original size / Zoom
-* [ ] Actions
-  * [x] Hide
-  * [x] Show
-  * [ ] MoveTo x y
-  * [ ] GestureAt x y
-  * [x] Play animation
-* [ ] Clean up
-  * [ ] Rewrite the ugly parts (many references and force unwraps)
-  * [ ] Extract the Agent reader into its own libary
-  * [ ] Test!
-* [ ] HitTest on transparent regions
-* [ ] Support branching and probability
-* [ ] Idle animations
-* [ ] Languages
-* [ ] Control via command line
+6. Pick an Agent under `📎` → `Sprites` → `…`
 
 ## Demo
 

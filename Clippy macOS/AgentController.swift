@@ -9,6 +9,7 @@
 import Cocoa
 import AVKit
 import SpriteKit
+import os
 
 @MainActor
 class AgentController {
@@ -26,15 +27,57 @@ class AgentController {
     
     var delegate: (any AgentControllerDelegate)?
     var isHidden = true
-    private(set) var scale: CGFloat = 1.0
-    private(set) var opacity: CGFloat = 0.5
+    private(set) var scale: CGFloat
+    private(set) var opacity: CGFloat
     
-    init() {
+    /// The agent to reopen on the next launch. Owned here rather than on
+    /// `AppDelegate` so every persisted value lives in one place.
+    var lastUsedAgent: String? {
+        didSet {
+            guard lastUsedAgent != oldValue else { return }
+            persist()
+        }
     }
     
-    convenience init(agentView: AgentView) {
-        self.init()
+    private let settingsStore: SettingsStore
+    private let log = Logger(subsystem: "com.meenbeese.clippy", category: "settings")
+    
+    init(settingsStore: SettingsStore = SettingsStore()) {
+        self.settingsStore = settingsStore
+        let settings = settingsStore.load()
+        self.scale = settings.scale
+        self.opacity = settings.opacity
+        self.isMuted = settings.isMuted
+        self.lastUsedAgent = settings.lastUsedAgent
+    }
+    
+    convenience init(agentView: AgentView, settingsStore: SettingsStore = SettingsStore()) {
+        self.init(settingsStore: settingsStore)
         self.agentView = agentView
+    }
+    
+    /// Pushes the restored settings into the view and the window.
+    ///
+    /// Call once from `AppDelegate` after both exist. Reading them back out of
+    /// `Settings` would be pointless — `AgentView` and `AgentWindow` each keep
+    /// their own default, so setting the stored property alone leaves the sprite
+    /// and the window alpha stale.
+    func applyRestoredSettings() {
+        agentView?.agentScale = scale
+        delegate?.handleScaleChange()
+        delegate?.handleOpacityChange()
+    }
+    
+    private func persist() {
+        let settings = Settings(scale: scale,
+                                opacity: opacity,
+                                isMuted: isMuted,
+                                lastUsedAgent: lastUsedAgent)
+        do {
+            try settingsStore.save(settings)
+        } catch {
+            log.error("Could not save settings: \(error.localizedDescription, privacy: .public)")
+        }
     }
     
     /// - Returns: `false`, if no agent with that name could be read.
@@ -118,11 +161,19 @@ class AgentController {
         self.scale = scale
         agentView?.agentScale = scale
         delegate?.handleScaleChange()
+        persist()
     }
     
     func setOpacity(_ opacity: CGFloat) {
         guard opacity != self.opacity else { return }
         self.opacity = opacity
         delegate?.handleOpacityChange()
+        persist()
+    }
+    
+    func setMuted(_ isMuted: Bool) {
+        guard isMuted != self.isMuted else { return }
+        self.isMuted = isMuted
+        persist()
     }
 }

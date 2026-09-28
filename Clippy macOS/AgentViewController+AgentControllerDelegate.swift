@@ -26,7 +26,7 @@ extension AgentViewController: AgentControllerDelegate {
     }
     
     func didLoadAgent(agent: Agent) {
-        (NSApplication.shared.delegate as? AppDelegate)?.lastUsedAgent = agent.resourceName
+        agentController.lastUsedAgent = agent.resourceName
     }
     
     /// The window keeps the 2x headroom the agent sprite has always been drawn

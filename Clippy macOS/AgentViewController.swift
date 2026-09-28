@@ -43,8 +43,12 @@ class AgentViewController: NSViewController {
         super.viewDidAppear()
         view.window?.makeFirstResponder(self)
         
-        let lastUsedName = (NSApplication.shared.delegate as? AppDelegate)?.lastUsedAgent
-        let name = lastUsedName ?? Agent.randomAgentName()
+        // Restored settings are applied here rather than from `AppDelegate` because
+        // this is the first point where the window is known to exist, and it happens
+        // before the first load so the sprite is never drawn at the wrong size.
+        agentController.applyRestoredSettings()
+        
+        let name = agentController.lastUsedAgent ?? Agent.randomAgentName()
         if let name {
             agentController.load(name: name)
             agentController.show()

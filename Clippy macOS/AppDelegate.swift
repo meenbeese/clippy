@@ -17,7 +17,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var zoomMenuItem: NSMenuItem?
     var opacityMenuItem: NSMenuItem?
     static var agentController: AgentController?
-    var lastUsedAgent: String?
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         
@@ -78,7 +77,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let item = NSMenuItem(title: agentName.capitalized,
                                   action: #selector(selectAgent(sender:)),
                                   keyEquivalent: "")
-            if lastUsedAgent == agentName {
+            if AppDelegate.agentController?.lastUsedAgent == agentName {
                 item.state = .on
             }
             agentsMenu.addItem(item)
@@ -132,7 +131,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         statusBarMenu.addItem(withTitle: "Show", action: #selector(showAction(sender:)), keyEquivalent: "")
         statusBarMenu.addItem(withTitle: "Hide", action: #selector(hideAction(sender:)), keyEquivalent: "")
-        statusBarMenu.addItem(withTitle: "Mute", action: #selector(toggleMuteAction(sender:)), keyEquivalent: "")
+        
+        /// Built explicitly so the restored mute state gets its checkmark, which
+        /// `toggleMuteAction` alone can only ever set on the item that was clicked.
+        let muteItem = NSMenuItem(title: "Mute", action: #selector(toggleMuteAction(sender:)), keyEquivalent: "")
+        muteItem.state = AppDelegate.agentController?.isMuted == true ? .on : .off
+        statusBarMenu.addItem(muteItem)
+        
         statusBarMenu.addItem(zoomItem)
         statusBarMenu.addItem(opacityItem)
         statusBarMenu.addItem(NSMenuItem.separator())
@@ -198,10 +203,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc func toggleMuteAction(sender: AnyObject) {
-        guard let menuItem = sender as? NSMenuItem else { return }
-        guard let isMuted = AppDelegate.agentController?.isMuted else { return }
+        guard let menuItem = sender as? NSMenuItem,
+              let isMuted = AppDelegate.agentController?.isMuted else { return }
         let newValue = !isMuted
-        AppDelegate.agentController?.isMuted = newValue
+        AppDelegate.agentController?.setMuted(newValue)
         menuItem.state = newValue ? .on : .off
     }
     
@@ -229,7 +234,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 AppDelegate.agentController?.play(animation: animation)
             }
         } else {
-            lastUsedAgent = name
+            AppDelegate.agentController?.lastUsedAgent = name
             window?.makeKeyAndOrderFront(self)
         }
         
