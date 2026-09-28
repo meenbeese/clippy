@@ -106,6 +106,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                            action: #selector(openFolderAction(sender:)),
                            keyEquivalent: "")
         statusBarMenu.addItem(NSMenuItem.separator())
+        statusBarMenu.addItem(withTitle: "About \(applicationName)",
+                           action: #selector(aboutAction(sender:)),
+                           keyEquivalent: "")
+        statusBarMenu.addItem(NSMenuItem.separator())
         statusBarMenu.addItem(withTitle: "Quit \(applicationName)", action: #selector(quitAction(sender:)), keyEquivalent: "")
         
         // Agents menu
@@ -117,6 +121,27 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc func quitAction(sender: AnyObject) {
         NSApplication.shared.terminate(self)
+    }
+    
+    /// The app is an `LSUIElement`, so the panel has to be activated explicitly
+    /// to land in front of whatever the user is working in.
+    @objc func aboutAction(sender: AnyObject) {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "-"
+        let build = info?["CFBundleVersion"] as? String ?? "-"
+        
+        let credits = NSAttributedString(string: """
+        Yes, Clippy from Microsoft Office is back — on macOS!
+        
+        The sprite maps, sounds and graphics were created by Microsoft.
+        """)
+        
+        NSApp.activate(ignoringOtherApps: true)
+        NSApp.orderFrontStandardAboutPanel(options: [
+            .applicationName: applicationName,
+            .applicationVersion: "\(version) (\(build))",
+            .credits: credits,
+        ])
     }
     
     @objc func reloadAction(sender: AnyObject) {
