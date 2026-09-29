@@ -9,7 +9,7 @@
 import Foundation
 import os
 
-private let log = Logger(subsystem: "com.cosmo.clippy", category: "settings")
+private let log = Logger(subsystem: "com.meenbeese.clippy", category: "settings")
 
 /// The persisted settings. This struct is the schema: add a field here, give it a
 /// default, and it round-trips through `SettingsStore` without touching anything else.

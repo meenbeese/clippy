@@ -9,10 +9,6 @@
 import Foundation
 import SpriteKit
 
-enum AgentError: Error {
-    case frameOutOfBounds
-}
-
 struct Agent {
     var character: AgentCharacter
     var balloon: AgentBalloon
@@ -83,35 +79,34 @@ struct Agent {
 
 extension Agent {
     var columns: Int {
-        let columns = Int(spriteMap.width) / character.width
-        return columns
+        guard character.width > 0 else { return 0 }
+        return Int(spriteMap.width) / character.width
     }
     var rows: Int {
-        let rows = Int(spriteMap.height) / character.height
-        return rows
+        guard character.height > 0 else { return 0 }
+        return Int(spriteMap.height) / character.height
     }
     
-    func textureAtPosition(x: Int, y: Int) throws -> CGImage {
-        guard (0...rows ~= y && 0...columns ~= x) else { throw AgentError.frameOutOfBounds }
-        let textureWidth = character.width
-        let textureHeight = character.height
-        let rect = CGRect(x: x * textureWidth, y: y * textureHeight, width: textureWidth, height: textureHeight)
-        return spriteMap.cropping(to: rect)!
+    /// - Returns: `nil` when the sprite map has no cell at that position, or when
+    ///   cropping fails. A malformed `.acd` should cost a frame, not the app.
+    func textureAtPosition(x: Int, y: Int) -> CGImage? {
+        guard character.width > 0, character.height > 0,
+              (0..<rows).contains(y), (0..<columns).contains(x) else { return nil }
+        let rect = CGRect(x: x * character.width,
+                          y: y * character.height,
+                          width: character.width,
+                          height: character.height)
+        return spriteMap.cropping(to: rect)
     }
     
-    func textureAtIndex(index: Int) throws -> CGImage {
-        let x = index % columns
-        let y = index / columns
-        return try! textureAtPosition(x: x, y: y)
+    func textureAtIndex(index: Int) -> CGImage? {
+        guard columns > 0 else { return nil }
+        return textureAtPosition(x: index % columns, y: index / columns)
     }
     
-    func imageForFrame(_ frame: AgentFrame) -> CGImage {
-        let cgImages = frame.images.reversed().map{ try! textureAtIndex(index: $0.imageNumber) }
-        if let mergedImage = CGImage.mergeImages(cgImages) {
-            return mergedImage
-        } else {
-            return try! textureAtIndex(index: 0)
-        }
+    func imageForFrame(_ frame: AgentFrame) -> CGImage? {
+        let images = frame.images.reversed().compactMap { textureAtIndex(index: $0.imageNumber) }
+        return CGImage.mergeImages(images) ?? textureAtIndex(index: 0)
     }
 }
 

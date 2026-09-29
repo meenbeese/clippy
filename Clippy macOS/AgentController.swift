@@ -105,8 +105,8 @@ class AgentController {
     }
     
     func showInitialFrame() {
-        guard let agent else { return }
-        self.agentView?.agentSprite.texture = SKTexture(cgImage: try! agent.textureAtIndex(index: 0))
+        guard let agent, let image = agent.textureAtIndex(index: 0) else { return }
+        agentView?.agentSprite.texture = SKTexture(cgImage: image)
     }
     
     /// Cutting the frames out of the sprite map and merging them is the expensive
@@ -129,6 +129,10 @@ class AgentController {
             
             var actions: [SKAction] = []
             for (index, image) in images.enumerated() {
+                // A frame we cannot render is skipped whole, so its sound does not
+                // outlive the missing image. `durations` and `soundActions` stay
+                // index-aligned with `frames` because this loop never reorders them.
+                guard let image else { continue }
                 if let soundAction = soundActions[index] {
                     actions.append(soundAction)
                 }

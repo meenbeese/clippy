@@ -109,10 +109,10 @@ extension AgentViewController {
             agentController.load(name: name)
             agentController.show()
         case 124: // Arrow Right Key
-            guard let animation = agent.findAnimation("LookLeft") else { break }
+            guard let animation = agent.findAnimation("LookRight") else { break }
             agentController.play(animation: animation)
         case 123: // Arrow Left Key
-            guard let animation = agent.findAnimation("LookRight") else { break }
+            guard let animation = agent.findAnimation("LookLeft") else { break }
             agentController.play(animation: animation)
         case 126: // Arrow Up Key
             guard let animation = agent.findAnimation("LookUp") else { break }

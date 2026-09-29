@@ -9,25 +9,31 @@
 import Foundation
 
 extension String {
-    func stringValueOfDefinition(onKey: String) -> String? {
+    /// The value of a `key value` definition line, e.g. `DefineInfo 0x0009` -> `0x0009`.
+    ///
+    /// - Returns: `nil` unless the line actually is a definition of `key`, so a
+    ///   value that merely mentions the key cannot be mistaken for one.
+    func stringValueOfDefinition(onKey key: String) -> String? {
         let trimmedString = self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        let pairArray = trimmedString.components(separatedBy: " ")
-        return pairArray.last
+        let prefix = "\(key) "
+        guard trimmedString.hasPrefix(prefix) else { return nil }
+        return String(trimmedString.dropFirst(prefix.count))
     }
     
-    func stringValueOfKeyValue(onKey: String) -> String? {
+    /// The value of a `key = value` line, e.g. `Width = 124` -> `124`.
+    ///
+    /// - Returns: `nil` unless the line actually assigns to `key`.
+    func stringValueOfKeyValue(onKey key: String) -> String? {
         let trimmedString = self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        let pairArray = trimmedString.components(separatedBy: " = ")
-        return pairArray.last
+        let prefix = "\(key) = "
+        guard trimmedString.hasPrefix(prefix) else { return nil }
+        return String(trimmedString.dropFirst(prefix.count))
     }
     
-    func intValueOfKeyValue(onKey: String) -> Int? {
-        if let string = self.stringValueOfKeyValue(onKey: onKey) {
-            return Int(string)
-        }
-        return nil
+    func intValueOfKeyValue(onKey key: String) -> Int? {
+        return stringValueOfKeyValue(onKey: key).flatMap(Int.init)
     }
-    
+
     func removedQuotes() -> String? {
         var trimmedString = self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         if trimmedString.count >= 2 {
