@@ -142,6 +142,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarMenu.addItem(opacityItem)
         statusBarMenu.addItem(NSMenuItem.separator())
         statusBarMenu.addItem(menuItem)
+        statusBarMenu.addItem(withTitle: "Add Agent…",
+                           action: #selector(addAgentAction(sender:)),
+                           keyEquivalent: "")
         statusBarMenu.addItem(withTitle: "Show in Finder",
                            action: #selector(openFolderAction(sender:)),
                            keyEquivalent: "")

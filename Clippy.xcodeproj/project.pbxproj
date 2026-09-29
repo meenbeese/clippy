@@ -47,6 +47,9 @@
 		45FF38A2232542BC00F724B7 /* AgentControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FF38A1232542BC00F724B7 /* AgentControllerDelegate.swift */; };
 		A1C0DE0229A000100000E102 /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE0129A000100000E101 /* AppLog.swift */; };
 		EC7F2952306B0A6D000D91E6 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7F2951306B0A6A000D91E6 /* Settings.swift */; };
+		00000000000000001A2B0002 /* ZipArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000001A2B0001 /* ZipArchive.swift */; };
+		00000000000000001A2B0004 /* AgentConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000001A2B0003 /* AgentConverter.swift */; };
+		00000000000000001A2B0006 /* AddAgentMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000001A2B0005 /* AddAgentMenuItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -85,6 +88,9 @@
 		45FF38A1232542BC00F724B7 /* AgentControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentControllerDelegate.swift; sourceTree = "<group>"; };
 		A1C0DE0129A000100000E101 /* AppLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
 		EC7F2951306B0A6A000D91E6 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		00000000000000001A2B0001 /* ZipArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipArchive.swift; sourceTree = "<group>"; };
+		00000000000000001A2B0003 /* AgentConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentConverter.swift; sourceTree = "<group>"; };
+		00000000000000001A2B0005 /* AddAgentMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAgentMenuItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +165,7 @@
 				453D7FCB231F914800995AB3 /* Sub-Classes */,
 				453D7FC8231F912800995AB3 /* Supporting Files */,
 				45491A582325D842007E04E2 /* AgentBalloonViewController.swift */,
+				00000000000000001A2B0005 /* AddAgentMenuItem.swift */,
 			);
 			path = "Clippy macOS";
 			sourceTree = "<group>";
@@ -206,6 +213,8 @@
 				45A72B6B23236076007DE9DA /* AgentCharacter.swift */,
 				45A72B6E232366C9007DE9DA /* AgentImage.swift */,
 				45A72B7123237B29007DE9DA /* AgentState.swift */,
+				00000000000000001A2B0001 /* ZipArchive.swift */,
+				00000000000000001A2B0003 /* AgentConverter.swift */,
 			);
 			path = AgentParser;
 			sourceTree = "<group>";
@@ -324,6 +333,8 @@
 				45A72B7223237B29007DE9DA /* AgentState.swift in Sources */,
 				45A72B6323236047007DE9DA /* AgentBranching.swift in Sources */,
 				45A72B6023236038007DE9DA /* AgentBalloon.swift in Sources */,
+				00000000000000001A2B0002 /* ZipArchive.swift in Sources */,
+				00000000000000001A2B0004 /* AgentConverter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,6 +365,9 @@
 				EC7F2952306B0A6D000D91E6 /* Settings.swift in Sources */,
 				A1C0DE0229A000100000E102 /* AppLog.swift in Sources */,
 				45FF38A2232542BC00F724B7 /* AgentControllerDelegate.swift in Sources */,
+				00000000000000001A2B0002 /* ZipArchive.swift in Sources */,
+				00000000000000001A2B0004 /* AgentConverter.swift in Sources */,
+				00000000000000001A2B0006 /* AddAgentMenuItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -98,9 +98,23 @@ struct Agent {
         self.init(agentURL: Agent.agentsURL().appendingPathComponent(directoryName))
     }
     
+    /// Extensions a sound may carry, most specific first.
+    ///
+    /// The agents shipped with the app hold MP3; ones built by `AgentConverter`
+    /// hold AAC in an MPEG-4 container, because macOS can decode MP3 but not
+    /// encode it. A `.wav` source folder may also be dropped in untouched.
+    private static let soundExtensions = ["m4a", "mp3", "wav"]
+
     func soundURL(forIndex index: Int) -> URL {
-        let fileName = "\(resourceName)_\(index).mp3"
-        return soundsURL.appendingPathComponent(fileName)
+        let baseName = "\(resourceName)_\(index)"
+        let fileManager = FileManager.default
+        for ext in Self.soundExtensions {
+            let candidate = soundsURL.appendingPathComponent("\(baseName).\(ext)")
+            if fileManager.fileExists(atPath: candidate.path) { return candidate }
+        }
+        // Nothing on disk yet: return the converter's format so callers still
+        // get a usable URL to hand to `AVPlayer`.
+        return soundsURL.appendingPathComponent("\(baseName).m4a")
     }
     
     func findAnimation(_ name: String) -> AgentAnimation? {
@@ -180,12 +194,93 @@ extension Agent {
                 AppLog.agent.error("Could not copy \(name).agent.zip: \(error.localizedDescription, privacy: .public)")
             }
         }
+        
+        unpackBundledArchives(in: url)
+    }
+    
+    /// Expands every `*.agent.zip` in the Agents directory.
+    ///
+    /// The app only ever *copied* these archives on first launch, so the user had
+    /// to unzip them by hand before any agent appeared. Extraction happens here
+    /// instead, which is also what `agentNames()` relies on to see the agents.
+    ///
+    /// A directory that is already unpacked is left alone, so this is safe to run
+    /// on every launch and never discards an agent the user has edited. Pass
+    /// `force` to overwrite it anyway.
+    @discardableResult
+    static func unpackBundledArchives(in directory: URL? = nil, force: Bool = false) -> [String] {
+        let fileManager = FileManager.default
+        let agentsDirectory = directory ?? agentsURL()
+        guard let contents = try? fileManager.contentsOfDirectory(at: agentsDirectory,
+                                                                  includingPropertiesForKeys: nil) else {
+            AppLog.agent.error("Could not list agents in \(agentsDirectory.path, privacy: .public)")
+            return []
+        }
+        
+        var unpacked: [String] = []
+        for archive in contents where archive.pathExtension.lowercased() == "zip" {
+            let name = archive.deletingPathExtension().lastPathComponent
+            guard name.hasSuffix(".agent") else { continue }
+            
+            let target = agentsDirectory.appendingPathComponent(name)
+            let isAlreadyUnpacked = isValidAgentFolder(target, resourceName: String(name.dropLast(".agent".count)))
+            if isAlreadyUnpacked && !force { continue }
+            
+            do {
+                try unpack(archive: archive, into: agentsDirectory)
+                try? fileManager.removeItem(at: agentsDirectory.appendingPathComponent("__MACOSX"))
+                unpacked.append(name)
+            } catch {
+                AppLog.agent.error("Could not unpack \(name, privacy: .public): \(error.localizedDescription, privacy: .public)")
+                // A half-extracted folder would be picked up as a broken agent.
+                try? fileManager.removeItem(at: target)
+            }
+        }
+        return unpacked
+    }
+    
+    /// `Agent(resourceName:)` needs the character file and the sprite map to
+    /// exist before it can read a folder, so their presence is what marks an
+    /// agent as unpacked.
+    private static func isValidAgentFolder(_ url: URL, resourceName: String) -> Bool {
+        let fileManager = FileManager.default
+        let acd = url.appendingPathComponent("\(resourceName).acd")
+        let spriteMap = url.appendingPathComponent("\(resourceName)_sprite_map.png")
+        return fileManager.fileExists(atPath: acd.path) && fileManager.fileExists(atPath: spriteMap.path)
+    }
+    
+    private static func unpack(archive: URL, into directory: URL) throws {
+        let fileManager = FileManager.default
+        let archive = try ZipArchive(url: archive)
+        
+        for entry in try archive.entries() {
+            // Resource-fork and Finder metadata would otherwise show up as
+            // ordinary files inside the agent folder.
+            guard !entry.name.hasPrefix("__MACOSX/"),
+                  !entry.name.hasPrefix("__MACOSX"),
+                  !entry.name.components(separatedBy: "/").contains("__MACOSX"),
+                  !entry.name.hasSuffix(".DS_Store"),
+                  !entry.name.hasPrefix("/"),
+                  !entry.name.contains("..") else { continue }
+            
+            let destination = directory.appendingPathComponent(entry.name)
+            if entry.name.hasSuffix("/") {
+                try fileManager.createDirectory(at: destination, withIntermediateDirectories: true)
+                continue
+            }
+            try fileManager.createDirectory(at: destination.deletingLastPathComponent(),
+                                            withIntermediateDirectories: true)
+            try archive.data(for: entry).write(to: destination, options: .atomic)
+        }
     }
     
     static func agentNames() -> [String] {
         var agentNames: [String] = []
         let fileManager = FileManager.default
         let agentsURL = agentsURL()
+        // Dropping a `*.agent.zip` into the folder is the other supported way to
+        // add an agent, so Reload has to expand it before listing.
+        unpackBundledArchives(in: agentsURL)
         guard let items = try? fileManager.contentsOfDirectory(at: agentsURL,
                                                                includingPropertiesForKeys: nil,
                                                                options: []) else {
