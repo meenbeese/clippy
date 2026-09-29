@@ -8,6 +8,12 @@
 
 import Foundation
 
+/// The `.acd` format only ever uses these two delimiters. Named sets are used
+/// rather than `punctuationCharacters`, which would also eat the trailing `?` of
+/// a description or the `.` of a filename.
+private let quoteCharacters = CharacterSet(charactersIn: "\"")
+private let braceCharacters = CharacterSet(charactersIn: "{}")
+
 extension String {
     /// The value of a `key value` definition line, e.g. `DefineInfo 0x0009` -> `0x0009`.
     ///
@@ -34,22 +40,12 @@ extension String {
         return stringValueOfKeyValue(onKey: key).flatMap(Int.init)
     }
 
-    func removedQuotes() -> String? {
-        var trimmedString = self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        if trimmedString.count >= 2 {
-            trimmedString.removeFirst()
-            trimmedString.removeLast()
-        }
-        return trimmedString
+    func removedQuotes() -> String {
+        return trimmingCharacters(in: .whitespacesAndNewlines.union(quoteCharacters))
     }
     
-    func removedCurlyBraces() -> String? {
-        var trimmedString = self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        if trimmedString.count >= 2 {
-            trimmedString.removeFirst()
-            trimmedString.removeLast()
-        }
-        return trimmedString
+    func removedCurlyBraces() -> String {
+        return trimmingCharacters(in: .whitespacesAndNewlines.union(braceCharacters))
     }
     
     func fetchInclusive(_ from: String, until: String) -> [String] {

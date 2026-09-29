@@ -86,7 +86,11 @@ struct Agent {
         self.animations = animations
         self.states = states
         
-        log.debug("\(name, privacy: .public) loaded: \(animations.count) animations, \(states.count) states, \(columns)x\(rows) grid")
+        // Bound to locals first: `columns`/`rows` read `self`, and interpolating
+        // them straight into the log closure trips the escaping-autoclosure check.
+        let columnCount = columns
+        let rowCount = rows
+        log.debug("\(name, privacy: .public) loaded: \(animations.count) animations, \(states.count) states, \(columnCount)x\(rowCount) grid")
     }
     
     init?(resourceName: String) {

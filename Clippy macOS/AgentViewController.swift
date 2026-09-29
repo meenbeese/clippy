@@ -96,30 +96,44 @@ extension AgentViewController {
         true
     }
     
+    /// Plays one of the four directional "look" animations, ignoring the key if the
+    /// agent does not define it.
+    private func look(_ name: String, of agent: Agent) {
+        guard let animation = agent.findAnimation(name) else { return }
+        agentController.play(animation: animation)
+    }
+    
+    /// Matching `NSEvent.specialKey` rather than `keyCode`.
+    ///
+    /// The four arrow codes were four adjacent integers, which is exactly how the
+    /// left/right pair came to be swapped: nothing about `124` says "right", whereas
+    /// `.rightArrow` cannot be paired with the wrong animation by accident. Modifiers
+    /// are ignored, so Cmd-arrow behaves as it did.
     override func keyDown(with event: NSEvent) {
         guard let agent = agentController.agent else {
             super.keyDown(with: event)
             return
         }
-        switch Int(event.keyCode) {
-        case 49: // Spacebar
+        
+        // Space is printable, so it has no `SpecialKey` of its own.
+        if event.charactersIgnoringModifiers == " " {
             agentController.animate()
-        case 36: // Return
+            return
+        }
+        
+        switch event.specialKey {
+        case .carriageReturn, .enter:
             guard let name = Agent.randomAgentName() else { return }
             agentController.load(name: name)
             agentController.show()
-        case 124: // Arrow Right Key
-            guard let animation = agent.findAnimation("LookRight") else { break }
-            agentController.play(animation: animation)
-        case 123: // Arrow Left Key
-            guard let animation = agent.findAnimation("LookLeft") else { break }
-            agentController.play(animation: animation)
-        case 126: // Arrow Up Key
-            guard let animation = agent.findAnimation("LookUp") else { break }
-            agentController.play(animation: animation)
-        case 125: // Arrow Down Key
-            guard let animation = agent.findAnimation("LookDown") else { break }
-            agentController.play(animation: animation)
+        case .leftArrow:
+            look("LookLeft", of: agent)
+        case .rightArrow:
+            look("LookRight", of: agent)
+        case .upArrow:
+            look("LookUp", of: agent)
+        case .downArrow:
+            look("LookDown", of: agent)
         default:
             super.keyDown(with: event)
         }
