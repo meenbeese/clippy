@@ -9,7 +9,6 @@
 import Cocoa
 import AVKit
 import SpriteKit
-import os
 
 @MainActor
 class AgentController {
@@ -40,7 +39,6 @@ class AgentController {
     }
     
     private let settingsStore: SettingsStore
-    private let log = Logger(subsystem: "com.meenbeese.clippy", category: "settings")
     
     init(settingsStore: SettingsStore = SettingsStore()) {
         self.settingsStore = settingsStore
@@ -76,7 +74,7 @@ class AgentController {
         do {
             try settingsStore.save(settings)
         } catch {
-            log.error("Could not save settings: \(error.localizedDescription, privacy: .public)")
+            AppLog.settings.error("Could not save settings: \(error.localizedDescription, privacy: .public)")
         }
     }
     

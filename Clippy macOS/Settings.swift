@@ -7,9 +7,6 @@
 //
 
 import Foundation
-import os
-
-private let log = Logger(subsystem: "com.meenbeese.clippy", category: "settings")
 
 /// The persisted settings. This struct is the schema: add a field here, give it a
 /// default, and it round-trips through `SettingsStore` without touching anything else.
@@ -33,9 +30,18 @@ extension Settings: Codable {
     }
 }
 
-enum SettingsError: Error {
+enum SettingsError: Error, LocalizedError {
     case encodingFailed(any Error)
     case decodingFailed(any Error)
+
+    var errorDescription: String? {
+        switch self {
+        case .encodingFailed(let error):
+            return "Could not encode settings: \(error.localizedDescription)"
+        case .decodingFailed(let error):
+            return "Could not decode settings: \(error.localizedDescription)"
+        }
+    }
 }
 
 /// Reads and writes `Settings` as a single plist blob under one key, so a save is
@@ -58,7 +64,7 @@ final class SettingsStore {
         do {
             return try PropertyListDecoder().decode(Settings.self, from: data)
         } catch {
-            log.error("Discarding unreadable settings: \(error.localizedDescription, privacy: .public)")
+            AppLog.settings.error("Discarding unreadable settings: \(String(describing: error), privacy: .public)")
             return Settings()
         }
     }

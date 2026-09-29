@@ -27,39 +27,66 @@ struct Agent {
         self.resourceNameWithSuffix = agentURL.lastPathComponent
         self.resourceName = resourceNameWithSuffix.replacingOccurrences(of: ".agent", with: "")
         
-        let fileURL = agentURL.appendingPathComponent("\(resourceName).acd")
-        let imageURL = agentURL.appendingPathComponent("\(resourceName)_sprite_map.png")
+        let log = AppLog.agent
+        // A local, because the log interpolations are escaping autoclosures and
+        // reading `self` from inside one of those only compiles under Swift 6.
+        let name = resourceName
+        let fileURL = agentURL.appendingPathComponent("\(name).acd")
+        let imageURL = agentURL.appendingPathComponent("\(name)_sprite_map.png")
         
-        guard let fileContent = try? String(contentsOf: fileURL, encoding: String.Encoding.utf8) else { return nil }
+        // Every failure below is a user dropping a malformed `.agent` folder into
+        // `~/Library/Application Support/Clippy/Agents`. Each one used to be a bare
+        // `return nil`, so a broken agent just failed to appear with nothing in the
+        // log to say why.
+        guard let fileContent = try? String(contentsOf: fileURL, encoding: String.Encoding.utf8) else {
+            log.error("No readable character file at \(fileURL.path, privacy: .public)")
+            return nil
+        }
         
         // Character
-        guard let characterText = fileContent.fetchInclusive("DefineCharacter", until: "EndCharacter").first else { return nil }
-        let character = AgentCharacter.parse(content: characterText)
+        guard let characterText = fileContent.fetchInclusive("DefineCharacter", until: "EndCharacter").first else {
+            log.error("\(name, privacy: .public): no DefineCharacter block")
+            return nil
+        }
+        guard let character = AgentCharacter.parse(content: characterText) else {
+            log.error("\(name, privacy: .public): DefineCharacter block is missing a required field")
+            return nil
+        }
         
         // Balloon
-        guard let balloonText = fileContent.fetchInclusive("DefineBalloon", until: "EndBalloon").first else { return nil }
-        let balloon = AgentBalloon.parse(content: balloonText)
+        guard let balloonText = fileContent.fetchInclusive("DefineBalloon", until: "EndBalloon").first else {
+            log.error("\(name, privacy: .public): no DefineBalloon block")
+            return nil
+        }
+        guard let balloon = AgentBalloon.parse(content: balloonText) else {
+            log.error("\(name, privacy: .public): DefineBalloon block is missing a required field")
+            return nil
+        }
         
         // Animations
         let animationTexts = fileContent.fetchInclusive("DefineAnimation", until: "EndAnimation")
         let animations = animationTexts.compactMap { AgentAnimation.parse(content: $0) }
+        if animations.count != animationTexts.count {
+            log.error("\(name, privacy: .public): \(animationTexts.count - animations.count) of \(animationTexts.count) animations failed to parse")
+        }
         
         // States
         let stateTexts = fileContent.fetchInclusive("DefineState", until: "EndState")
         let states = stateTexts.compactMap { AgentState.parse(content: $0) }
         
         // Sprite Map
-        guard let image = NSImage(contentsOf: imageURL)?.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
-        spriteMap = image
-        
-        if let character = character, let balloon = balloon {
-            self.character = character
-            self.balloon = balloon
-            self.animations = animations
-            self.states = states
-        } else {
+        guard let image = NSImage(contentsOf: imageURL)?.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            log.error("No readable sprite map at \(imageURL.path, privacy: .public)")
             return nil
         }
+        spriteMap = image
+        
+        self.character = character
+        self.balloon = balloon
+        self.animations = animations
+        self.states = states
+        
+        log.debug("\(name, privacy: .public) loaded: \(animations.count) animations, \(states.count) states, \(columns)x\(rows) grid")
     }
     
     init?(resourceName: String) {
@@ -126,15 +153,27 @@ extension Agent {
     
     static func createAgentsDirectoriesIfNeeded(url: URL) {
         let fileManager = FileManager.default
-        if !fileManager.fileExists(atPath: url.path) {
-            try? fileManager.createDirectory(at: url,
-                                             withIntermediateDirectories: true,
-                                             attributes: nil)
-            ["clippit", "links", "merlin"].forEach {
-                guard let agentsArchiveURL = Bundle.main.url(forResource: "\($0).agent", withExtension: "zip") else {
-                    return
-                }
-                try? fileManager.copyItem(at: agentsArchiveURL, to: url.appendingPathComponent("\($0).agent.zip"))
+        guard !fileManager.fileExists(atPath: url.path) else { return }
+        
+        do {
+            try fileManager.createDirectory(at: url,
+                                           withIntermediateDirectories: true,
+                                           attributes: nil)
+        } catch {
+            AppLog.agent.error("Could not create \(url.path, privacy: .public): \(error.localizedDescription, privacy: .public)")
+            return
+        }
+        
+        for name in ["clippit", "links", "merlin"] {
+            guard let agentsArchiveURL = Bundle.main.url(forResource: "\(name).agent", withExtension: "zip") else {
+                AppLog.agent.error("\(name).agent.zip is missing from the app bundle")
+                continue
+            }
+            let destination = url.appendingPathComponent("\(name).agent.zip")
+            do {
+                try fileManager.copyItem(at: agentsArchiveURL, to: destination)
+            } catch {
+                AppLog.agent.error("Could not copy \(name).agent.zip: \(error.localizedDescription, privacy: .public)")
             }
         }
     }
@@ -142,9 +181,13 @@ extension Agent {
     static func agentNames() -> [String] {
         var agentNames: [String] = []
         let fileManager = FileManager.default
-        guard let items = try? fileManager.contentsOfDirectory(at: agentsURL(),
+        let agentsURL = agentsURL()
+        guard let items = try? fileManager.contentsOfDirectory(at: agentsURL,
                                                                includingPropertiesForKeys: nil,
                                                                options: []) else {
+            // Otherwise this surfaces only as an empty "Sprites" menu, which reads
+            // as "you have no agents" rather than "Clippy cannot read its own folder".
+            AppLog.agent.error("Could not list agents in \(agentsURL.path, privacy: .public)")
             return []
         }
         
