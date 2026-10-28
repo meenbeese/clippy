@@ -17,7 +17,7 @@ jobs:
 
       - name: SwiftFormat lint
         continue-on-error: true
-        run: swiftformat --lint --reporter github "Clippy macOS" "Clippy Shared"
+        run: swiftformat --lint --reporter github-actions-log "Clippy macOS" "Clippy Shared"
 
       - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@v1.7.0
