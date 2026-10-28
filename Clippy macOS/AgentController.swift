@@ -112,6 +112,15 @@ class AgentController {
     /// the `CGImage`s cross over and the textures are built back on the main actor.
     func play(animation: AgentAnimation, withSoundEnabled soundEnabled: Bool = true, completion: (() -> Void)? = nil) {
         guard let agent else { return }
+
+        // Reduce Motion is a user preference that applies exactly to this
+        // (unnecessary, involuntary) kind of movement, so the rest pose stays
+        // on screen and callers only ever see the completion.
+        if NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+            showInitialFrame()
+            completion?()
+            return
+        }
         
         /// All three arrays below are derived from `frames`, so they always share its count.
         let frames = animation.frames

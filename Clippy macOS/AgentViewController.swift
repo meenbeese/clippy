@@ -38,6 +38,11 @@ class AgentViewController: NSViewController {
         view.addSubview(agentView)
         setupConstraints()
         setupTrackingArea()
+        agentView.pressAction = { [weak self] in
+            guard let self else { return }
+            agentController.animate()
+            speakRandomBalloonLine()
+        }
     }
     
     
@@ -199,7 +204,7 @@ extension AgentViewController {
         let popOver = NSPopover()
         popOver.behavior = .semitransient
         popOver.contentSize = CGSize(width: 200, height: 300)
-        popOver.animates = true
+        popOver.animates = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         popOver.contentViewController = viewController
         let rect = self.view.frame
         popOver.show(relativeTo: rect, of: view, preferredEdge: NSRectEdge.maxY)

@@ -18,6 +18,13 @@ extension AgentViewController: AgentControllerDelegate {
         }
         
         window.title = agentName
+
+        // VoiceOver has no way to know a new sprite took the place of the old
+        // one, so rename the accessible image element and tell the user.
+        agentView.setAccessibilityLabel(agentName)
+        // A `.moved` post makes the element re-read under the cursor without
+        // being as intrusive as an announcement.
+        NSAccessibility.post(element: agentView, notification: .moved)
         
         /// Disable animation, when the window was not moved before.
         /// This happens, when the window was initially created.
@@ -92,6 +99,13 @@ extension AgentViewController: AgentControllerDelegate {
         let newBalloon = SpeechBalloonWindow(text: text, balloon: agent.balloon)
         balloonWindow = newBalloon
         newBalloon.present(above: window)
+
+        // The balloon is not mouse-interactive and vanishes quickly, so
+        // VoiceOver users would otherwise never see its text. Announce it.
+        NSAccessibility.post(element: NSApp as Any,
+                             notification: .announcementRequested,
+                             userInfo: [.announcement: text as NSString,
+                                        .priority: NSAccessibilityPriorityLevel.high.rawValue])
 
         // Reading time: 1.5 s base, ~40 ms per character, capped at 8 s.
         let seconds = min(8, max(2.5, 1.5 + Double(text.count) * 0.04))

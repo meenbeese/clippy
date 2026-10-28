@@ -15,6 +15,10 @@ class AgentView: NSView {
         skView.wantsLayer = true
         skView.allowsTransparency = true
         skView.layer?.backgroundColor = .clear
+        // The sprite canvas renders pixels SpriteKit draws itself; the AgentView
+        // below is the one accessible element, so the SKView must not show up
+        // as an empty child node under the cursor.
+        skView.setAccessibilityElement(false)
         return skView
     }()
     
@@ -53,13 +57,33 @@ class AgentView: NSView {
         super.init(frame: frameRect)
         wantsLayer = true
         layer?.backgroundColor = .clear
-        
+
         addSubview(skView)
-        
+
         setupConstraints()
-        
+
         skView.presentScene(scene)
         applyScale()
+
+        // VoiceOver sees the sprite as one image, labelled with the current
+        // agent's name. `accessibilityLabel` is updated on every load, see
+        // `AgentViewController.willLoadAgent`.
+        // `NSView` exposes its accessibility properties only through the
+        // legacy setter methods, so `setAccessibility…` is used throughout.
+        setAccessibilityElement(true)
+        setAccessibilityRole(.image)
+        setAccessibilityLabel("Clippy")
+        setAccessibilityHelp("Press Space to animate, arrow keys to look around, Return to choose a random assistant. Double-click also animates.")
+    }
+
+    /// Invoked by VoiceOver's "Press" action; `AgentViewController` hooks the
+    /// animate-and-speak behaviour up in `viewDidLoad`.
+    var pressAction: (() -> Void)?
+
+    override func accessibilityPerformPress() -> Bool {
+        guard let pressAction else { return false }
+        pressAction()
+        return true
     }
     
     required init?(coder: NSCoder) {
