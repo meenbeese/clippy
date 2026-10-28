@@ -19,6 +19,9 @@ final class SpeechBalloonView: NSView {
     private var bubbleColor: NSColor
     private var borderColor: NSColor
     private let bubbleRect: NSRect
+    /// Where the tail hangs from, in this view's coordinates. Slid into place
+    /// once the window knows where the sprite actually is; see `setTailAnchor`.
+    private var tailAnchorX: CGFloat = 12
 
     private static let padding: CGFloat = 10
     private static let tailHeight: CGFloat = 18
@@ -64,6 +67,16 @@ final class SpeechBalloonView: NSView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// Slides the tail along the bottom edge of the bubble so its tip aims at
+    /// the sprite's mouth. Values are simply clamped, so a sprite that sits at
+    /// the screen edge gets the closest possible tail; the left lean of the
+    /// tail (tip 18 pt left of its base) is kept in all cases.
+    func setTailAnchor(_ x: CGFloat) {
+        // Room for the 18–52 pt lean span, so the base never leaves the bubble.
+        tailAnchorX = min(max(x, bubbleRect.minX + 20), bubbleRect.maxX - 54)
+        needsDisplay = true
+    }
+
     /// MSAgent stores balloon colors as OLE `COLORREF`: `00BBGGRR` in hex.
     private static func color(from colorRef: String, fallback: NSColor) -> NSColor {
         guard colorRef.count == 8,
@@ -94,10 +107,12 @@ final class SpeechBalloonView: NSView {
         bubble.lineWidth = 1.5
         bubble.stroke()
 
-        // Tail pointing down-left toward the sprite this window is attached to.
-        let baseLeft = NSPoint(x: bubbleRect.minX + 30, y: bubbleRect.minY)
-        let baseRight = NSPoint(x: bubbleRect.minX + 64, y: bubbleRect.minY)
-        let tip = NSPoint(x: 12, y: 2)
+        // Tail pointing down toward the sprite this window is attached to.
+        // Tip, base and lean all follow `tailAnchorX`, which layout slides to
+        // sit above the sprite's mouth.
+        let baseLeft = NSPoint(x: tailAnchorX + 18, y: bubbleRect.minY)
+        let baseRight = NSPoint(x: tailAnchorX + 52, y: bubbleRect.minY)
+        let tip = NSPoint(x: tailAnchorX, y: 2)
         let tail = NSBezierPath()
         tail.move(to: baseLeft)
         tail.line(to: tip)
@@ -152,13 +167,18 @@ final class SpeechBalloonWindow: NSWindow {
 
     private func layout(above spriteWindow: NSWindow) {
         let sprite = spriteWindow.frame
-        var origin = NSPoint(x: sprite.maxX - frame.width * 0.75,
-                             y: sprite.maxY + 2)
+        // The tail aims at the sprite's mouth: its horizontal middle, a step
+        // above the top edge. Centering the bubble over that point reads as
+        // one "speaker"; when the screen edge then shifts the bubble, the
+        // tail slides along the bottom edge to stay pointed at the sprite.
+        let mouthX = sprite.midX
+        var origin = NSPoint(x: mouthX - frame.width / 2, y: sprite.maxY + 2)
         if let visible = (spriteWindow.screen ?? NSScreen.main)?.visibleFrame {
             origin.x = min(max(origin.x, visible.minX + 2),
                            visible.maxX - frame.width - 2)
             origin.y = min(origin.y, visible.maxY - frame.height)
         }
         setFrameOrigin(origin)
+        (contentView as? SpeechBalloonView)?.setTailAnchor(mouthX - origin.x)
     }
 }

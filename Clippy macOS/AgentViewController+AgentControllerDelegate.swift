@@ -57,6 +57,7 @@ extension AgentViewController: AgentControllerDelegate {
     }
     
     func handleHide() {
+        stopIdleChatter()
         if let animation = agentController.agent?.findAnimation("Hide") {
             agentController.play(animation: animation) {
                 self.agentController.isHidden = true
@@ -68,6 +69,7 @@ extension AgentViewController: AgentControllerDelegate {
     func handleShow() {
         view.superview?.window?.makeKeyAndOrderFront(self)
         agentController.isHidden = false
+        restartIdleChatter()
         if let animation = agentController.agent?.findAnimation("Show") {
             agentController.play(animation: animation)
         }
