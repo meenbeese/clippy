@@ -32,13 +32,13 @@ enum AgentConverterError: LocalizedError {
         case .unreadableImage(let url):
             return "Could not read sprite \(url.lastPathComponent)."
         case .inconsistentSpriteSizes:
-            return "Sprites differ in size; this is not a supported agent."
+            return "Sprites differ in size; this is not a supported sprite."
         case .noSounds(let url):
             return "No .wav sounds found in \(url.path)/Audio."
         case .unusableSound(let url):
             return "Could not read sound \(url.lastPathComponent)."
         case .emptyName:
-            return "The agent name may not be empty."
+            return "The sprite name may not be empty."
         }
     }
 }

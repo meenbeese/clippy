@@ -14,9 +14,9 @@ The `SpriteKit`-Framework is used to animate through Clippy's sprite map.
 
 1. [Download Clippy for macOS](https://github.com/Cosmo/Clippy/releases/download/2.0.0/Clippy.zip) or build from source.
 2. Run the application
-3. Click `📎` → `Sprites` → pick an Agent
+3. Click `📎` → `Sprites` → pick a Sprite
 
-Clippy's three agents are bundled with the app and are unpacked automatically on first launch — there is nothing to unzip by hand.
+Clippy's three sprites are bundled with the app and are unpacked automatically on first launch — there is nothing to unzip by hand.
 
 ## Demo
 
@@ -33,21 +33,21 @@ git clone https://github.com/meenbeese/clippy.git
 * Build and run the macOS target
 
 
-## Add other Agents (optional)
+## Add other Sprites (optional)
 
-An `*.acs` file includes all required resources (bitmaps, sounds, definitions, etc.) of an agent.
+An `*.acs` file includes all required resources (bitmaps, sounds, definitions, etc.) of a sprite.
 Unfortunately, this project does not support `*.acs` files, yet. But hopefully in the future — pull-requests are welcome.
  
 Until then, you can extract all resources that we need from an `*.acs` with the "[MSAgent Decompiler](http://www.lebeausoftware.org/software/decompile.aspx)" by Lebeau Software.
-The decompiler writes a folder holding the agent's `*.acd` file plus `Images` and `Audio` folders.
+The decompiler writes a folder holding the sprite's `*.acd` file plus `Images` and `Audio` folders.
 
 ### Conversion
 
-Decompiled agents still need to be turned into a `.agent` folder, which Clippy does for you.
+Decompiled sprites still need to be turned into a `.agent` folder, which Clippy does for you.
 
-1. Click `📎` → `Add Agent…`
+1. Click `📎` → `Add Sprite…`
 2. Pick the folder the decompiler wrote
-3. Click `📎` → `Sprites` → pick the new Agent
+3. Click `📎` → `Sprites` → pick the new Sprite
 
 No external tools are involved. The sprites are made transparent, merged into a single sprite map and the sounds are re-encoded, all inside the app.
 
@@ -57,6 +57,7 @@ Inspiration was taken from:
 
 * https://github.com/tanathos/ClippyVS (C#)
 * https://github.com/smore-inc/clippy.js (JavaScript)
+- https://github.com/Cosmo/Clippy (Swift)
 
 Graphics were created by *Microsoft*.
 
@@ -65,8 +66,3 @@ Graphics were created by *Microsoft*.
 Watch the Unauthorized Biography with [Steven Sinofsky](https://twitter.com/stevesi), if you're interested in Clippy's history!
 
 [![Clippy: The Unauthorized Biography](https://img.youtube.com/vi/8bhjNvSSuLM/0.jpg)](https://www.youtube.com/watch?v=8bhjNvSSuLM)
-
-## Contact
-
-* Devran "Cosmo" Uenal
-* Twitter: [@maccosmo](http://twitter.com/maccosmo)

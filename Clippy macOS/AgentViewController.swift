@@ -3,7 +3,7 @@
 //  Clippy
 //
 //  Created by Devran on 04.09.19.
-//  Copyright © 2019 Devran. All rights reserved.
+//  Copyright © 2026 Kuzey Bilgin. All rights reserved.
 //
 
 import AppKit
@@ -148,26 +148,26 @@ extension AgentViewController {
     override func rightMouseDown(with event: NSEvent) {
         guard let _ = agentController.agent else { return }
         
-        let menu = NSMenu(title: "Agent")
-        let menuItems = [
-            NSMenuItem(title: "Hide",
-                       action: #selector(hideAction(sender:)),
-                       keyEquivalent: ""),
-            NSMenuItem.separator(),
-            NSMenuItem(title: "Options…",
-                       action: nil,
-                       keyEquivalent: ""),
-            NSMenuItem(title: "Choose Assistant…",
-                       action: #selector(chooseAssistantAction),
-                       keyEquivalent: ""),
-            NSMenuItem(title: "Animate!",
-                       action: #selector(animateAction),
-                       keyEquivalent: "")
-        ]
-        
-        for (index, menuItem) in menuItems.enumerated() {
-            menu.insertItem(menuItem, at: index)
-        }
+        let menu = NSMenu(title: "Sprite")
+        let hideItem = NSMenuItem(title: "Hide",
+                                  action: #selector(hideAction(sender:)),
+                                  keyEquivalent: "")
+        hideItem.keyEquivalent = "h"
+        hideItem.keyEquivalentModifierMask = [.command, .shift]
+        menu.addItem(hideItem)
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "Options…",
+                                action: nil,
+                                keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "Choose Assistant…",
+                                action: #selector(chooseAssistantAction),
+                                keyEquivalent: ""))
+        let animateItem = NSMenuItem(title: "Animate!",
+                                     action: #selector(animateAction),
+                                     keyEquivalent: "")
+        animateItem.keyEquivalent = "a"
+        animateItem.keyEquivalentModifierMask = [.command, .shift]
+        menu.addItem(animateItem)
         NSMenu.popUpContextMenu(menu, with: event, for: agentView)
     }
     

@@ -3,7 +3,7 @@
 //  Clippy
 //
 //  Created by Kuzey Bilgin on 2026-09-29.
-//  Copyright © 2026 Devran. All rights reserved.
+//  Copyright © 2026 Kuzey Bilgin. All rights reserved.
 //
 
 import Foundation

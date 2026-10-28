@@ -50,6 +50,7 @@
 		00000000000000001A2B0002 /* ZipArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000001A2B0001 /* ZipArchive.swift */; };
 		00000000000000001A2B0004 /* AgentConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000001A2B0003 /* AgentConverter.swift */; };
 		00000000000000001A2B0006 /* AddAgentMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000001A2B0005 /* AddAgentMenuItem.swift */; };
+		00000000000000001A2B0008 /* AboutWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000001A2B0007 /* AboutWindowController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -91,6 +92,7 @@
 		00000000000000001A2B0001 /* ZipArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipArchive.swift; sourceTree = "<group>"; };
 		00000000000000001A2B0003 /* AgentConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentConverter.swift; sourceTree = "<group>"; };
 		00000000000000001A2B0005 /* AddAgentMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAgentMenuItem.swift; sourceTree = "<group>"; };
+		00000000000000001A2B0007 /* AboutWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutWindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +168,7 @@
 				453D7FC8231F912800995AB3 /* Supporting Files */,
 				45491A582325D842007E04E2 /* AgentBalloonViewController.swift */,
 				00000000000000001A2B0005 /* AddAgentMenuItem.swift */,
+				00000000000000001A2B0007 /* AboutWindowController.swift */,
 			);
 			path = "Clippy macOS";
 			sourceTree = "<group>";
@@ -368,6 +371,7 @@
 				00000000000000001A2B0002 /* ZipArchive.swift in Sources */,
 				00000000000000001A2B0004 /* AgentConverter.swift in Sources */,
 				00000000000000001A2B0006 /* AddAgentMenuItem.swift in Sources */,
+				00000000000000001A2B0008 /* AboutWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -548,6 +552,7 @@
 		453D7FA5231F189600995AB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = macOSAppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -572,6 +577,7 @@
 		453D7FA6231F189600995AB3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = macOSAppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;

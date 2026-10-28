@@ -3,7 +3,7 @@
 //  Clippy macOS
 //
 //  Created by Devran on 08.09.19.
-//  Copyright © 2019 Devran. All rights reserved.
+//  Copyright © 2026 Kuzey Bilgin. All rights reserved.
 //
 
 import Cocoa
@@ -38,6 +38,15 @@ extension AgentViewController: AgentControllerDelegate {
                           height: character.size.height * scale)
         let rect = CGRect(origin: window.frame.origin, size: size)
         window.setFrame(rect, display: true, animate: animated)
+        /// The very first sprite sizes the window and picks its default spot;
+        /// after that only the position the user has chosen is kept safe.
+        if let agentWindow = window as? AgentWindow {
+            if agentWindow.hasDefaultPosition {
+                agentWindow.clampToVisibleScreen()
+            } else {
+                agentWindow.moveToLowerRightCorner()
+            }
+        }
     }
     
     func handleHide() {

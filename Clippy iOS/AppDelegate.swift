@@ -3,7 +3,7 @@
 //  Clippy iOS
 //
 //  Created by Devran on 03.09.19.
-//  Copyright © 2019 Devran. All rights reserved.
+//  Copyright © 2026 Kuzey Bilgin. All rights reserved.
 //
 
 import UIKit

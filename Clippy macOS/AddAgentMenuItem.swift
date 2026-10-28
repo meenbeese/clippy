@@ -10,16 +10,16 @@ import Cocoa
 
 @MainActor
 extension AppDelegate {
-    private static let addAgentItemTitle = "Add Agent…"
+    private static let addAgentItemTitle = "Add Sprite…"
     private static let convertingAgentItemTitle = "Converting…"
 
     /// Opens a folder picker, converts the chosen decompiled agent and reloads
     /// the agents menu so the new entry can be picked straight away.
     @objc func addAgentAction(sender: AnyObject) {
         let panel = NSOpenPanel()
-        panel.title = "Choose a Decompiled Agent"
+        panel.title = "Choose a Decompiled Sprite"
         panel.message = "Select the folder the MSAgent Decompiler wrote. It should contain an .acd file, plus Images and Audio folders."
-        panel.prompt = "Add Agent"
+        panel.prompt = "Add Sprite"
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = false
@@ -37,7 +37,7 @@ extension AppDelegate {
     private func convertAgent(at sourceURL: URL) {
         let name = AgentConverter.sanitize(sourceURL.lastPathComponent)
         guard !name.isEmpty else {
-            presentAlert(title: "Could Not Add Agent",
+            presentAlert(title: "Could Not Add Sprite",
                          message: "“\(sourceURL.lastPathComponent)” has no usable characters in its name. Rename the folder to lowercase letters, digits, “-” or “_”.")
             return
         }
@@ -52,7 +52,7 @@ extension AppDelegate {
                 }.value
                 setAddAgentItemBusy(false)
                 agentsMenuItem?.submenu = createAgentsMenu()
-                presentAlert(title: "Agent Added",
+                presentAlert(title: "Sprite Added",
                              message: "“\(name)” is ready. Pick it under Sprites.")
             } catch {
                 setAddAgentItemBusy(false)

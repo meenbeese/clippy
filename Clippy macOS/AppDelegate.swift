@@ -3,7 +3,7 @@
 //  Clippy macOS
 //
 //  Created by Devran on 03.09.19.
-//  Copyright © 2019 Devran. All rights reserved.
+//  Copyright © 2026 Kuzey Bilgin. All rights reserved.
 //
 
 import Cocoa
@@ -16,6 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var agentsMenuItem: NSMenuItem?
     var zoomMenuItem: NSMenuItem?
     var opacityMenuItem: NSMenuItem?
+    var aboutWindowController: AboutWindowController?
     static var agentController: AgentController?
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
@@ -26,7 +27,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if !Agent.agentNames().isEmpty {
             window?.makeKeyAndOrderFront(self)
         }
-        window?.center()
+        // The sprite window takes its default bottom-right position once the
+        // first agent load has given it its real size; see `resizeWindow`.
         
         setupStatusBar()
     }
@@ -65,11 +67,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func createAgentsMenu() -> NSMenu {
-        let agentsMenu = NSMenu(title: "Agents")
+        let agentsMenu = NSMenu(title: "Sprites")
         let agentNames = Agent.agentNames()
         
         if agentNames.isEmpty {
-            agentsMenu.addItem(withTitle: "No Agents found.",
+            agentsMenu.addItem(withTitle: "No Sprites found.",
                                action: nil,
                                keyEquivalent: "")
         }
@@ -83,9 +85,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             agentsMenu.addItem(item)
         }
         agentsMenu.addItem(NSMenuItem.separator())
-        agentsMenu.addItem(withTitle: "Reload",
+        let reloadItem = agentsMenu.addItem(withTitle: "Reload",
                            action: #selector(reloadAction(sender:)),
                            keyEquivalent: "")
+        addShortcut(reloadItem, key: "r")
         return agentsMenu
     }
     
@@ -119,6 +122,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return opacityMenu
     }
     
+    func addShortcut(_ item: NSMenuItem, key: String, shift: Bool = true) {
+        item.keyEquivalent = key
+        item.keyEquivalentModifierMask = shift ? [.command, .shift] : [.command]
+    }
+
     func setupStatusBarMenu() {
         // Status bar menu
         let statusBarMenu = NSMenu(title: "Clippy")
@@ -129,31 +137,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
               let zoomItem = zoomMenuItem,
               let opacityItem = opacityMenuItem else  { return }
         
-        statusBarMenu.addItem(withTitle: "Show", action: #selector(showAction(sender:)), keyEquivalent: "")
-        statusBarMenu.addItem(withTitle: "Hide", action: #selector(hideAction(sender:)), keyEquivalent: "")
-        
+        let showItem = statusBarMenu.addItem(withTitle: "Show", action: #selector(showAction(sender:)), keyEquivalent: "")
+        addShortcut(showItem, key: "s")
+        let hideStatusBarItem = statusBarMenu.addItem(withTitle: "Hide", action: #selector(hideAction(sender:)), keyEquivalent: "")
+        addShortcut(hideStatusBarItem, key: "h")
+
         /// Built explicitly so the restored mute state gets its checkmark, which
         /// `toggleMuteAction` alone can only ever set on the item that was clicked.
         let muteItem = NSMenuItem(title: "Mute", action: #selector(toggleMuteAction(sender:)), keyEquivalent: "")
         muteItem.state = AppDelegate.agentController?.isMuted == true ? .on : .off
+        addShortcut(muteItem, key: "m")
         statusBarMenu.addItem(muteItem)
         
         statusBarMenu.addItem(zoomItem)
         statusBarMenu.addItem(opacityItem)
         statusBarMenu.addItem(NSMenuItem.separator())
         statusBarMenu.addItem(menuItem)
-        statusBarMenu.addItem(withTitle: "Add Agent…",
+        let addSpriteItem = statusBarMenu.addItem(withTitle: "Add Sprite…",
                            action: #selector(addAgentAction(sender:)),
                            keyEquivalent: "")
-        statusBarMenu.addItem(withTitle: "Show in Finder",
+        addShortcut(addSpriteItem, key: "n")
+        let showInFinderItem = statusBarMenu.addItem(withTitle: "Show in Finder",
                            action: #selector(openFolderAction(sender:)),
                            keyEquivalent: "")
+        addShortcut(showInFinderItem, key: "f")
         statusBarMenu.addItem(NSMenuItem.separator())
         statusBarMenu.addItem(withTitle: "About \(applicationName)",
                            action: #selector(aboutAction(sender:)),
                            keyEquivalent: "")
         statusBarMenu.addItem(NSMenuItem.separator())
-        statusBarMenu.addItem(withTitle: "Quit \(applicationName)", action: #selector(quitAction(sender:)), keyEquivalent: "")
+        let quitItem = statusBarMenu.addItem(withTitle: "Quit \(applicationName)", action: #selector(quitAction(sender:)), keyEquivalent: "")
+        addShortcut(quitItem, key: "q", shift: false)
         
         // Agents menu
         statusBarMenu.setSubmenu(createAgentsMenu(), for: menuItem)
@@ -171,22 +185,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     /// The app is an `LSUIElement`, so the panel has to be activated explicitly
     /// to land in front of whatever the user is working in.
     @objc func aboutAction(sender: AnyObject) {
-        let info = Bundle.main.infoDictionary
-        let version = info?["CFBundleShortVersionString"] as? String ?? "-"
-        let build = info?["CFBundleVersion"] as? String ?? "-"
-        
-        let credits = NSAttributedString(string: """
-        Yes, Clippy from Microsoft Office is back — on macOS!
-        
-        The sprite maps, sounds and graphics were created by Microsoft.
-        """)
-        
         NSApp.activate(ignoringOtherApps: true)
-        NSApp.orderFrontStandardAboutPanel(options: [
-            .applicationName: applicationName,
-            .applicationVersion: "\(version) (\(build))",
-            .credits: credits,
-        ])
+        if aboutWindowController == nil {
+            aboutWindowController = AboutWindowController()
+        }
+        aboutWindowController?.window?.makeKeyAndOrderFront(self)
     }
     
     @objc func reloadAction(sender: AnyObject) {
