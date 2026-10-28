@@ -51,6 +51,7 @@
 		00000000000000001A2B0004 /* AgentConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000001A2B0003 /* AgentConverter.swift */; };
 		00000000000000001A2B0006 /* AddAgentMenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000001A2B0005 /* AddAgentMenuItem.swift */; };
 		00000000000000001A2B0008 /* AboutWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000001A2B0007 /* AboutWindowController.swift */; };
+		00000000000000001A2B000A /* SpeechBalloonWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000001A2B0009 /* SpeechBalloonWindow.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -93,6 +94,7 @@
 		00000000000000001A2B0003 /* AgentConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentConverter.swift; sourceTree = "<group>"; };
 		00000000000000001A2B0005 /* AddAgentMenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAgentMenuItem.swift; sourceTree = "<group>"; };
 		00000000000000001A2B0007 /* AboutWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutWindowController.swift; sourceTree = "<group>"; };
+		00000000000000001A2B0009 /* SpeechBalloonWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechBalloonWindow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +171,7 @@
 				45491A582325D842007E04E2 /* AgentBalloonViewController.swift */,
 				00000000000000001A2B0005 /* AddAgentMenuItem.swift */,
 				00000000000000001A2B0007 /* AboutWindowController.swift */,
+				00000000000000001A2B0009 /* SpeechBalloonWindow.swift */,
 			);
 			path = "Clippy macOS";
 			sourceTree = "<group>";
@@ -372,6 +375,7 @@
 				00000000000000001A2B0004 /* AgentConverter.swift in Sources */,
 				00000000000000001A2B0006 /* AddAgentMenuItem.swift in Sources */,
 				00000000000000001A2B0008 /* AboutWindowController.swift in Sources */,
+				00000000000000001A2B000A /* SpeechBalloonWindow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

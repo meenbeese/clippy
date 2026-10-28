@@ -76,4 +76,35 @@ extension AgentViewController: AgentControllerDelegate {
         window.unfocusedAlpha = agentController.opacity
         window.applyAlpha(isForeground: window.isKeyWindow)
     }
+
+    /// Renders the text in a speech balloon above the sprite, styled from the
+    /// agent's own `DefineBalloon` declaration. A follow-up speak cancels the
+    /// previous balloon and its dismissal timer.
+    func speak(text: String) {
+        guard let window = view.superview?.window, let agent = agentController.agent else { return }
+
+        balloonDismissWorkItem?.cancel()
+        if let balloonWindow {
+            window.removeChildWindow(balloonWindow)
+            balloonWindow.close()
+        }
+
+        let newBalloon = SpeechBalloonWindow(text: text, balloon: agent.balloon)
+        balloonWindow = newBalloon
+        newBalloon.present(above: window)
+
+        // Reading time: 1.5 s base, ~40 ms per character, capped at 8 s.
+        let seconds = min(8, max(2.5, 1.5 + Double(text.count) * 0.04))
+        let dismiss = DispatchWorkItem { [weak self] in
+            guard let self, let window = self.view.superview?.window else { return }
+            if let balloonWindow = self.balloonWindow {
+                window.removeChildWindow(balloonWindow)
+                balloonWindow.close()
+            }
+            self.balloonWindow = nil
+            self.balloonDismissWorkItem = nil
+        }
+        balloonDismissWorkItem = dismiss
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: dismiss)
+    }
 }

@@ -11,6 +11,8 @@ import AppKit
 class AgentViewController: NSViewController {
     var agentController: AgentController
     var agentView: AgentView
+    var balloonWindow: SpeechBalloonWindow?
+    var balloonDismissWorkItem: DispatchWorkItem?
     
     init() {
         agentView = AgentView()
@@ -79,10 +81,6 @@ extension AgentViewController {
         (view.superview?.window as? AgentWindow)?.applyAlpha(isForeground: false)
     }
     
-    @objc func animateAction() {
-        agentController.animate()
-    }
-    
     @objc func chooseAssistantAction() {
         guard let name = Agent.randomAgentName() else { return }
         agentController.load(name: name)
@@ -142,6 +140,7 @@ extension AgentViewController {
     override func mouseDown(with event: NSEvent) {
         if event.clickCount == 2 {
             agentController.animate()
+            speakRandomBalloonLine()
         }
     }
     
@@ -163,7 +162,7 @@ extension AgentViewController {
                                 action: #selector(chooseAssistantAction),
                                 keyEquivalent: ""))
         let animateItem = NSMenuItem(title: "Animate!",
-                                     action: #selector(animateAction),
+                                     action: #selector(animateAction(sender:)),
                                      keyEquivalent: "")
         animateItem.keyEquivalent = "a"
         animateItem.keyEquivalentModifierMask = [.command, .shift]
@@ -171,6 +170,26 @@ extension AgentViewController {
         NSMenu.popUpContextMenu(menu, with: event, for: agentView)
     }
     
+    /// Classic Office Assistant lines for the balloon, shown when the sprite
+    /// animates on demand.
+    private static let balloonLines = [
+        "It looks like you're writing a letter. Would you like help?",
+        "Is there something I can do for you?",
+        "Did you know? I can animate on demand!",
+        "This looks like something we should investigate…",
+        "Would you like me to try that again?",
+    ]
+
+    private func speakRandomBalloonLine() {
+        guard let line = Self.balloonLines.randomElement() else { return }
+        agentController.speak(line)
+    }
+
+    @objc func animateAction(sender: AnyObject) {
+        agentController.animate()
+        speakRandomBalloonLine()
+    }
+
     @objc func hideAction(sender: AnyObject) {
         agentController.hide()
     }

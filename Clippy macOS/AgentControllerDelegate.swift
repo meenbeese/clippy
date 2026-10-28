@@ -17,4 +17,5 @@ protocol AgentControllerDelegate {
     func handleShow()
     func handleScaleChange()
     func handleOpacityChange()
+    func speak(text: String)
 }

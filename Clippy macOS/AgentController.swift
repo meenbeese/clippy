@@ -142,12 +142,23 @@ class AgentController {
             self.agentView?.agentSprite.removeAllActions()
             await self.agentView?.agentSprite.run(SKAction.sequence(actions))
             completion?()
+            // An animation never leaves the agent hanging in its last frame:
+            // once the sequence is done, go back to the rest pose like the
+            // classic Office Assistant did.
+            self.showInitialFrame()
         }
     }
     
     func animate() {
         guard let animation = agent?.animations.randomElement() else { return }
         play(animation: animation)
+    }
+
+    /// Initial speech-balloon support: text is written by the host app in the
+    /// style of the classic Agent runtime `Speak` command; if/when animations
+    /// carry their own text, that source can replace the callers.
+    func speak(_ text: String) {
+        delegate?.speak(text: text)
     }
     
     func hide() {
