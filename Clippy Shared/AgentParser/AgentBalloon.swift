@@ -27,9 +27,9 @@ extension AgentBalloon {
         var foregroundColor: String?
         var backgroundColor: String?
         var borderColor: String?
-        
-        content.enumerateLines(invoking: { (line: String, stop: inout Bool) in
-            let trimmedLine = line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+
+        content.enumerateLines { line, _ in
+            let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedLine.starts(with: "NumLines ") {
                 numberOfLines = trimmedLine.intValueOfKeyValue(onKey: "NumLines")
             }
@@ -51,9 +51,11 @@ extension AgentBalloon {
             if trimmedLine.starts(with: "BorderColor ") {
                 borderColor = trimmedLine.stringValueOfKeyValue(onKey: "BorderColor")
             }
-        })
-        
-        if let numberOfLines = numberOfLines, let charactersPerLine = charactersPerLine, let fontName = fontName, let fontHeight = fontHeight, let foregroundColor = foregroundColor, let backgroundColor = backgroundColor, let borderColor = borderColor {
+        }
+
+        if let numberOfLines, let charactersPerLine, let fontName, let fontHeight,
+           let foregroundColor, let backgroundColor, let borderColor
+        {
             return AgentBalloon(numberOfLines: numberOfLines, charactersPerLine: charactersPerLine, fontName: fontName, fontHeight: fontHeight, foregroundColor: foregroundColor, backgroundColor: backgroundColor, borderColor: borderColor)
         }
         return nil

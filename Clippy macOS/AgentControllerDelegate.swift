@@ -12,7 +12,7 @@ import Cocoa
 protocol AgentControllerDelegate {
     func willLoadAgent(agent: Agent)
     func didLoadAgent(agent: Agent)
-    
+
     func handleHide()
     func handleShow()
     func handleScaleChange()

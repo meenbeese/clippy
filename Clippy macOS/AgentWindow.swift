@@ -16,7 +16,7 @@ class AgentWindow: NSWindow {
     /// Set once the window has received its default bottom-right position.
     /// Later sprite changes keep the position the user moved it to.
     var hasDefaultPosition = false
-    
+
     override init(contentRect: NSRect, styleMask style: NSWindow.StyleMask, backing backingStoreType: NSWindow.BackingStoreType, defer flag: Bool) {
         super.init(contentRect: contentRect, styleMask: style, backing: backingStoreType, defer: flag)
         level = NSWindow.Level.floating
@@ -24,30 +24,32 @@ class AgentWindow: NSWindow {
         backingType = .buffered
         isMovable = true
         isMovableByWindowBackground = true
-        let debug = false
-        if debug {
+        #if DEBUG
+            // Diagnosing the transparent window needs content visible against a
+            // white background and a title bar; the shipped build stays seamless.
             backgroundColor = .white
             styleMask = [.titled]
-        } else {
+        #else
             backgroundColor = .clear
-        }
-        
-        /// Fixes glitches
+        #endif
+
+        // Fixes glitches
         hasShadow = false
         isOpaque = true
         delegate = self
     }
-    
+
     override var canBecomeKey: Bool {
-        return true
+        true
     }
+
     /// Places the window at the bottom-right of the usable screen area.
     /// A small margin keeps Clippy off the Dock; `visibleFrame` already
     /// excludes the menu bar.
     func moveToLowerRightCorner() {
         guard let visibleFrame = (screen ?? NSScreen.main)?.visibleFrame else { return }
         let margin: CGFloat = 16
-        var frame = self.frame
+        var frame = frame
         frame.origin.x = visibleFrame.maxX - frame.width - margin
         frame.origin.y = visibleFrame.minY + margin
         setFrameOrigin(frame.origin)
@@ -59,7 +61,7 @@ class AgentWindow: NSWindow {
     func clampToVisibleScreen() {
         guard let visibleFrame = (screen ?? NSScreen.main)?.visibleFrame,
               frame.width <= visibleFrame.width, frame.height <= visibleFrame.height else { return }
-        var frame = self.frame
+        var frame = frame
         frame.origin.x = min(max(frame.origin.x, visibleFrame.minX), visibleFrame.maxX - frame.width)
         frame.origin.y = min(max(frame.origin.y, visibleFrame.minY), visibleFrame.maxY - frame.height)
         if frame.origin != self.frame.origin {
@@ -69,14 +71,14 @@ class AgentWindow: NSWindow {
 }
 
 extension AgentWindow: NSWindowDelegate {
-    func windowDidResignKey(_ notification: Notification) {
+    func windowDidResignKey(_: Notification) {
         applyAlpha(isForeground: false)
     }
-    
-    func windowDidBecomeKey(_ notification: Notification) {
+
+    func windowDidBecomeKey(_: Notification) {
         applyAlpha(isForeground: true)
     }
-    
+
     func applyAlpha(isForeground: Bool) {
         alphaValue = isForeground ? 1.0 : unfocusedAlpha
     }

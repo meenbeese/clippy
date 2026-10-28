@@ -32,7 +32,7 @@ enum AppLog {
     private static let subsystem = Bundle.main.bundleIdentifier ?? "com.meenbeese.clippy"
 
     static func logger(_ category: Category) -> Logger {
-        return Logger(subsystem: subsystem, category: category.rawValue)
+        Logger(subsystem: subsystem, category: category.rawValue)
     }
 
     static let settings = logger(.settings)

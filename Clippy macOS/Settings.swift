@@ -36,10 +36,10 @@ enum SettingsError: Error, LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .encodingFailed(let error):
-            return "Could not encode settings: \(error.localizedDescription)"
-        case .decodingFailed(let error):
-            return "Could not decode settings: \(error.localizedDescription)"
+        case let .encodingFailed(error):
+            "Could not encode settings: \(error.localizedDescription)"
+        case let .decodingFailed(error):
+            "Could not decode settings: \(error.localizedDescription)"
         }
     }
 }

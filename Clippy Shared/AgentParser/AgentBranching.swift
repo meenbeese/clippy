@@ -16,12 +16,12 @@ struct AgentBranching {
 extension AgentBranching {
     static func parse(content: String) -> [AgentBranching] {
         var branchings: [AgentBranching] = []
-        
+
         var branchToBuffer: Int?
         var probabilityBuffer: Int?
-        
-        content.enumerateLines(invoking: { (line: String, stop: inout Bool) in
-            let trimmedLine = line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+
+        content.enumerateLines { line, _ in
+            let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedLine.starts(with: "BranchTo ") {
                 branchToBuffer = trimmedLine.intValueOfKeyValue(onKey: "BranchTo")
             }
@@ -29,13 +29,12 @@ extension AgentBranching {
                 probabilityBuffer = trimmedLine.intValueOfKeyValue(onKey: "Probability")
             }
             if let branchTo = branchToBuffer, let probability = probabilityBuffer {
-                let branching = AgentBranching(branchTo: branchTo, probability: probability)
-                branchings.append(branching)
+                branchings.append(AgentBranching(branchTo: branchTo, probability: probability))
                 branchToBuffer = nil
                 probabilityBuffer = nil
             }
-        })
-        
+        }
+
         return branchings
     }
 }

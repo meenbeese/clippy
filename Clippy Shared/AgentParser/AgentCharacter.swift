@@ -30,8 +30,8 @@ extension AgentCharacter {
         var defaultFrameDuration: Int?
         var style: String?
         var colorTable: String?
-        content.enumerateLines(invoking: { (line: String, stop: inout Bool) in
-            let trimmedLine = line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        content.enumerateLines { line, _ in
+            let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedLine.starts(with: "GUID ") {
                 guid = trimmedLine.stringValueOfKeyValue(onKey: "GUID")?.removedCurlyBraces()
             }
@@ -53,9 +53,9 @@ extension AgentCharacter {
             if trimmedLine.starts(with: "ColorTable ") {
                 colorTable = trimmedLine.stringValueOfKeyValue(onKey: "ColorTable")?.removedQuotes()
             }
-        })
-        
-        if let guid = guid, let width = width, let height = height, let transparency = transparency, let defaultFrameDuration = defaultFrameDuration, let style = style, let colorTable = colorTable {
+        }
+
+        if let guid, let width, let height, let transparency, let defaultFrameDuration, let style, let colorTable {
             return AgentCharacter(infos: infos, guid: guid, width: width, height: height, transparency: transparency, defaultFrameDuration: defaultFrameDuration, style: style, colorTable: colorTable)
         }
         return nil
@@ -64,6 +64,6 @@ extension AgentCharacter {
 
 extension AgentCharacter {
     var size: CGSize {
-        return CGSize(width: width, height: height)
+        CGSize(width: width, height: height)
     }
 }

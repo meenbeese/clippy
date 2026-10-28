@@ -1,0 +1,3 @@
+--swiftversion 6.0
+
+--exclude .git,build,Clippy.gif

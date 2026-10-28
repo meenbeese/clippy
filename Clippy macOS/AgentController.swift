@@ -6,29 +6,29 @@
 //  Copyright © 2026 Kuzey Bilgin. All rights reserved.
 //
 
-import Cocoa
 import AVKit
+import Cocoa
 import SpriteKit
 
 @MainActor
 class AgentController {
     /// Zoom factors offered in the status bar menu. 1.0 keeps the current size.
     static let scalePresets: [CGFloat] = [0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
-    
+
     /// Alpha values offered in the status bar menu. 1.0 never dims the window.
     static let opacityPresets: [CGFloat] = [0.25, 0.5, 0.75, 1.0]
-    
+
     var isMuted = false
     let player = AVPlayer()
-    
+
     var agent: Agent?
     var agentView: AgentView?
-    
+
     var delegate: (any AgentControllerDelegate)?
     var isHidden = true
     private(set) var scale: CGFloat
     private(set) var opacity: CGFloat
-    
+
     /// The agent to reopen on the next launch. Owned here rather than on
     /// `AppDelegate` so every persisted value lives in one place.
     var lastUsedAgent: String? {
@@ -37,23 +37,23 @@ class AgentController {
             persist()
         }
     }
-    
+
     private let settingsStore: SettingsStore
-    
+
     init(settingsStore: SettingsStore = SettingsStore()) {
         self.settingsStore = settingsStore
         let settings = settingsStore.load()
-        self.scale = settings.scale
-        self.opacity = settings.opacity
-        self.isMuted = settings.isMuted
-        self.lastUsedAgent = settings.lastUsedAgent
+        scale = settings.scale
+        opacity = settings.opacity
+        isMuted = settings.isMuted
+        lastUsedAgent = settings.lastUsedAgent
     }
-    
+
     convenience init(agentView: AgentView, settingsStore: SettingsStore = SettingsStore()) {
         self.init(settingsStore: settingsStore)
         self.agentView = agentView
     }
-    
+
     /// Pushes the restored settings into the view and the window.
     ///
     /// Call once from `AppDelegate` after both exist. Reading them back out of
@@ -65,7 +65,7 @@ class AgentController {
         delegate?.handleScaleChange()
         delegate?.handleOpacityChange()
     }
-    
+
     private func persist() {
         let settings = Settings(scale: scale,
                                 opacity: opacity,
@@ -77,7 +77,7 @@ class AgentController {
             AppLog.settings.error("Could not save settings: \(error.localizedDescription, privacy: .public)")
         }
     }
-    
+
     /// - Returns: `false`, if no agent with that name could be read.
     @discardableResult
     func load(name: String) -> Bool {
@@ -88,25 +88,24 @@ class AgentController {
         delegate?.didLoadAgent(agent: agent)
         return true
     }
-    
+
     func audioActionForFrame(frame: AgentFrame) -> SKAction? {
         guard let agent, let soundIndex = frame.soundIndex else { return nil }
         let soundURL = agent.soundURL(forIndex: soundIndex)
-        let action = SKAction.run { [weak self] in
+        return SKAction.run { [weak self] in
             guard let self else { return }
             let playerItem = AVPlayerItem(url: soundURL)
-            self.player.replaceCurrentItem(with: playerItem)
-            self.player.play()
-            self.player.volume = self.isMuted ? 0 : 1.0
+            player.replaceCurrentItem(with: playerItem)
+            player.play()
+            player.volume = isMuted ? 0 : 1.0
         }
-        return action
     }
-    
+
     func showInitialFrame() {
         guard let agent, let image = agent.textureAtIndex(index: 0) else { return }
         agentView?.agentSprite.texture = SKTexture(cgImage: image)
     }
-    
+
     /// Cutting the frames out of the sprite map and merging them is the expensive
     /// part, so it runs off the main actor. `SKTexture` is not `Sendable`, so only
     /// the `CGImage`s cross over and the textures are built back on the main actor.
@@ -121,19 +120,19 @@ class AgentController {
             completion?()
             return
         }
-        
-        /// All three arrays below are derived from `frames`, so they always share its count.
+
+        // All three arrays below are derived from `frames`, so they always share its count.
         let frames = animation.frames
         let durations = frames.map(\.durationInSeconds)
         let soundActions: [SKAction?] = soundEnabled ? frames.map(audioActionForFrame(frame:)) : []
-        
+
         Task { @MainActor [weak self] in
             let images = await Task.detached(priority: .userInitiated) {
                 frames.map { agent.imageForFrame($0) }
             }.value
-            
+
             guard let self else { return }
-            
+
             var actions: [SKAction] = []
             for (index, image) in images.enumerated() {
                 // A frame we cannot render is skipped whole, so its sound does not
@@ -147,17 +146,17 @@ class AgentController {
                 texture.filteringMode = .nearest
                 actions.append(SKAction.animate(with: [texture], timePerFrame: durations[index]))
             }
-            
-            self.agentView?.agentSprite.removeAllActions()
-            await self.agentView?.agentSprite.run(SKAction.sequence(actions))
+
+            agentView?.agentSprite.removeAllActions()
+            await agentView?.agentSprite.run(SKAction.sequence(actions))
             completion?()
             // An animation never leaves the agent hanging in its last frame:
             // once the sequence is done, go back to the rest pose like the
             // classic Office Assistant did.
-            self.showInitialFrame()
+            showInitialFrame()
         }
     }
-    
+
     func animate() {
         guard let animation = agent?.animations.randomElement() else { return }
         play(animation: animation)
@@ -169,15 +168,15 @@ class AgentController {
     func speak(_ text: String) {
         delegate?.speak(text: text)
     }
-    
+
     func hide() {
         delegate?.handleHide()
     }
-    
+
     func show() {
         delegate?.handleShow()
     }
-    
+
     func setScale(_ scale: CGFloat) {
         guard scale != self.scale else { return }
         self.scale = scale
@@ -185,14 +184,14 @@ class AgentController {
         delegate?.handleScaleChange()
         persist()
     }
-    
+
     func setOpacity(_ opacity: CGFloat) {
         guard opacity != self.opacity else { return }
         self.opacity = opacity
         delegate?.handleOpacityChange()
         persist()
     }
-    
+
     func setMuted(_ isMuted: Bool) {
         guard isMuted != self.isMuted else { return }
         self.isMuted = isMuted

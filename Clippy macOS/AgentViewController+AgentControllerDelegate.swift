@@ -1,5 +1,5 @@
 //
-//  AgentViewController+AgentDelegate.swift
+//  AgentViewController+AgentControllerDelegate.swift
 //  Clippy macOS
 //
 //  Created by Devran on 08.09.19.
@@ -11,12 +11,12 @@ import Cocoa
 extension AgentViewController: AgentControllerDelegate {
     func willLoadAgent(agent: Agent) {
         guard let window = view.superview?.window else { return }
-        
+
         var agentName = agent.resourceName
         if let name = agent.character.infos.first(where: { $0.language == "0x0009" })?.name {
             agentName = name
         }
-        
+
         window.title = agentName
 
         // VoiceOver has no way to know a new sprite took the place of the old
@@ -25,17 +25,17 @@ extension AgentViewController: AgentControllerDelegate {
         // A `.moved` post makes the element re-read under the cursor without
         // being as intrusive as an announcement.
         NSAccessibility.post(element: agentView, notification: .moved)
-        
-        /// Disable animation, when the window was not moved before.
-        /// This happens, when the window was initially created.
+
+        // Disable animation, when the window was not moved before.
+        // This happens, when the window was initially created.
         let animated = window.frame.origin.x > 0 && window.frame.origin.y > 0
         resizeWindow(toFit: agent.character, animated: animated)
     }
-    
+
     func didLoadAgent(agent: Agent) {
         agentController.lastUsedAgent = agent.resourceName
     }
-    
+
     /// The window keeps the 2x headroom the agent sprite has always been drawn
     /// into, multiplied by the current zoom factor.
     private func resizeWindow(toFit character: AgentCharacter, animated: Bool) {
@@ -45,8 +45,8 @@ extension AgentViewController: AgentControllerDelegate {
                           height: character.size.height * scale)
         let rect = CGRect(origin: window.frame.origin, size: size)
         window.setFrame(rect, display: true, animate: animated)
-        /// The very first sprite sizes the window and picks its default spot;
-        /// after that only the position the user has chosen is kept safe.
+        // The very first sprite sizes the window and picks its default spot;
+        // after that only the position the user has chosen is kept safe.
         if let agentWindow = window as? AgentWindow {
             if agentWindow.hasDefaultPosition {
                 agentWindow.clampToVisibleScreen()
@@ -55,7 +55,7 @@ extension AgentViewController: AgentControllerDelegate {
             }
         }
     }
-    
+
     func handleHide() {
         stopIdleChatter()
         if let animation = agentController.agent?.findAnimation("Hide") {
@@ -65,7 +65,7 @@ extension AgentViewController: AgentControllerDelegate {
             }
         }
     }
-    
+
     func handleShow() {
         view.superview?.window?.makeKeyAndOrderFront(self)
         agentController.isHidden = false
@@ -74,12 +74,12 @@ extension AgentViewController: AgentControllerDelegate {
             agentController.play(animation: animation)
         }
     }
-    
+
     func handleScaleChange() {
         guard let character = agentController.agent?.character else { return }
         resizeWindow(toFit: character, animated: true)
     }
-    
+
     func handleOpacityChange() {
         guard let window = view.superview?.window as? AgentWindow else { return }
         window.unfocusedAlpha = agentController.opacity
@@ -92,7 +92,8 @@ extension AgentViewController: AgentControllerDelegate {
     func speak(text: String) {
         guard let window = view.superview?.window, let agent = agentController.agent else { return }
 
-        balloonDismissWorkItem?.cancel()
+        balloonDismissTask?.cancel()
+        balloonDismissTask = nil
         if let balloonWindow {
             window.removeChildWindow(balloonWindow)
             balloonWindow.close()
@@ -111,16 +112,15 @@ extension AgentViewController: AgentControllerDelegate {
 
         // Reading time: 1.5 s base, ~40 ms per character, capped at 8 s.
         let seconds = min(8, max(2.5, 1.5 + Double(text.count) * 0.04))
-        let dismiss = DispatchWorkItem { [weak self] in
-            guard let self, let window = self.view.superview?.window else { return }
-            if let balloonWindow = self.balloonWindow {
+        balloonDismissTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(seconds))
+            guard !Task.isCancelled, let self, let window = view.superview?.window else { return }
+            if let balloonWindow {
                 window.removeChildWindow(balloonWindow)
                 balloonWindow.close()
             }
-            self.balloonWindow = nil
-            self.balloonDismissWorkItem = nil
+            balloonWindow = nil
+            balloonDismissTask = nil
         }
-        balloonDismissWorkItem = dismiss
-        DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: dismiss)
     }
 }

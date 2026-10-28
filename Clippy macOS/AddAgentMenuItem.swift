@@ -15,7 +15,7 @@ extension AppDelegate {
 
     /// Opens a folder picker, converts the chosen decompiled agent and reloads
     /// the agents menu so the new entry can be picked straight away.
-    @objc func addAgentAction(sender: AnyObject) {
+    @objc func addAgentAction(sender _: AnyObject) {
         let panel = NSOpenPanel()
         panel.title = "Choose a Decompiled Sprite"
         panel.message = "Select the folder the MSAgent Decompiler wrote. It should contain an .acd file, plus Images and Audio folders."

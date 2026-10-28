@@ -10,8 +10,8 @@
 //  method-8 entry holds — so no zlib header is fed in or expected out.
 //
 
-import Foundation
 import Compression
+import Foundation
 
 struct ZipArchiveEntry {
     let name: String
@@ -31,15 +31,15 @@ enum ZipArchiveError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .truncated:
-            return "The archive ends unexpectedly."
+            "The archive ends unexpectedly."
         case .missingEndOfCentralDirectory:
-            return "The archive has no central directory and is not a ZIP file."
+            "The archive has no central directory and is not a ZIP file."
         case .malformedCentralDirectory:
-            return "The archive's central directory is corrupt."
-        case .unsupportedCompression(let method):
-            return "The archive uses unsupported compression method \(method)."
-        case .inflateFailed(let name, let got, let expected):
-            return "Could not decompress \"\(name)\" (got \(got) of \(expected) bytes)."
+            "The archive's central directory is corrupt."
+        case let .unsupportedCompression(method):
+            "The archive uses unsupported compression method \(method)."
+        case let .inflateFailed(name, got, expected):
+            "Could not decompress \"\(name)\" (got \(got) of \(expected) bytes)."
         }
     }
 }
@@ -59,8 +59,8 @@ struct ZipArchive {
         var result: [ZipArchiveEntry] = []
         result.reserveCapacity(count)
 
-        for _ in 0..<count {
-            guard offset + 46 <= data.count, read32(offset) == 0x0201_4b50 else {
+        for _ in 0 ..< count {
+            guard offset + 46 <= data.count, read32(offset) == 0x0201_4B50 else {
                 throw ZipArchiveError.malformedCentralDirectory
             }
             let method = read16(offset + 10)
@@ -71,7 +71,7 @@ struct ZipArchive {
             let commentLength = Int(read16(offset + 32))
             let localHeaderOffset = Int(read32(offset + 42))
             guard offset + 46 + nameLength <= data.count else { throw ZipArchiveError.truncated }
-            let name = String(decoding: data[(offset + 46)..<(offset + 46 + nameLength)], as: UTF8.self)
+            let name = String(decoding: data[(offset + 46) ..< (offset + 46 + nameLength)], as: UTF8.self)
             result.append(ZipArchiveEntry(name: name,
                                           method: method,
                                           compressedSize: compressedSize,
@@ -85,7 +85,7 @@ struct ZipArchive {
     /// The uncompressed bytes of a single entry.
     func data(for entry: ZipArchiveEntry) throws -> Data {
         let offset = entry.localHeaderOffset
-        guard offset + 30 <= data.count, read32(offset) == 0x0403_4b50 else {
+        guard offset + 30 <= data.count, read32(offset) == 0x0403_4B50 else {
             throw ZipArchiveError.malformedCentralDirectory
         }
         // The local header repeats the name and may carry a *different* extra field
@@ -94,7 +94,7 @@ struct ZipArchive {
         let extraLength = Int(read16(offset + 28))
         let start = offset + 30 + nameLength + extraLength
         guard start + entry.compressedSize <= data.count else { throw ZipArchiveError.truncated }
-        let raw = data.subdata(in: start..<(start + entry.compressedSize))
+        let raw = data.subdata(in: start ..< (start + entry.compressedSize))
 
         switch entry.method {
         case 0:
@@ -109,14 +109,16 @@ struct ZipArchive {
     // MARK: - Inflation
 
     private func inflate(_ raw: Data, entry: ZipArchiveEntry) throws -> Data {
-        if entry.uncompressedSize == 0 { return Data() }
+        if entry.uncompressedSize == 0 {
+            return Data()
+        }
 
         // A single `compression_decode_buffer` call can stop early on a large
         // stream, so the buffer is decoded in a loop until it is exhausted.
         var output = Data(count: entry.uncompressedSize)
         let produced: Int = output.withUnsafeMutableBytes { destination in
             guard let destinationBase = destination.bindMemory(to: UInt8.self).baseAddress else { return 0 }
-            var decoded: Int = 0
+            var decoded = 0
             while decoded < entry.uncompressedSize {
                 let written = raw.withUnsafeBytes { source -> Int in
                     guard let sourceBase = source.bindMemory(to: UInt8.self).baseAddress else { return 0 }
@@ -127,7 +129,9 @@ struct ZipArchive {
                                                      nil,
                                                      COMPRESSION_ZLIB)
                 }
-                if written <= 0 { break }
+                if written <= 0 {
+                    break
+                }
                 decoded += written
             }
             return decoded
@@ -144,11 +148,11 @@ struct ZipArchive {
     // MARK: - Little-endian primitives
 
     private func read16(_ offset: Int) -> UInt16 {
-        return UInt16(data[offset]) | UInt16(data[offset + 1]) << 8
+        UInt16(data[offset]) | UInt16(data[offset + 1]) << 8
     }
 
     private func read32(_ offset: Int) -> UInt32 {
-        return UInt32(data[offset])
+        UInt32(data[offset])
             | UInt32(data[offset + 1]) << 8
             | UInt32(data[offset + 2]) << 16
             | UInt32(data[offset + 3]) << 24
@@ -162,7 +166,9 @@ struct ZipArchive {
         let earliest = max(0, data.count - 22 - 0xFFFF)
         var offset = data.count - 22
         while offset >= earliest {
-            if read32(offset) == 0x0605_4b50 { return offset }
+            if read32(offset) == 0x0605_4B50 {
+                return offset
+            }
             offset -= 1
         }
         throw ZipArchiveError.missingEndOfCentralDirectory

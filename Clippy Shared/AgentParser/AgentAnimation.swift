@@ -20,18 +20,18 @@ extension AgentAnimation {
         var transitionType: Int?
         let frameTexts = content.fetchInclusive("DefineFrame", until: "EndFrame")
         let frames = frameTexts.compactMap { AgentFrame.parse(content: $0) }
-        
-        content.enumerateLines(invoking: { (line: String, stop: inout Bool) in
-            let trimmedLine = line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+
+        content.enumerateLines { line, _ in
+            let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedLine.starts(with: "DefineAnimation ") {
                 animationName = trimmedLine.stringValueOfDefinition(onKey: "DefineAnimation")?.removedQuotes()
             }
             if trimmedLine.starts(with: "TransitionType ") {
                 transitionType = trimmedLine.intValueOfKeyValue(onKey: "TransitionType")
             }
-        })
-        
-        if let animationName = animationName, let transitionType = transitionType {
+        }
+
+        if let animationName, let transitionType {
             return AgentAnimation(name: animationName, transitionType: transitionType, frames: frames)
         }
         return nil

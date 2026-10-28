@@ -55,9 +55,9 @@ No external tools are involved. The sprites are made transparent, merged into a 
 
 Inspiration was taken from:
 
-* https://github.com/tanathos/ClippyVS (C#)
-* https://github.com/smore-inc/clippy.js (JavaScript)
-- https://github.com/Cosmo/Clippy (Swift)
+* <https://github.com/tanathos/ClippyVS> (C#)
+* <https://github.com/smore-inc/clippy.js> (JavaScript)
+* <https://github.com/Cosmo/Clippy> (Swift)
 
 Graphics were created by *Microsoft*.
 

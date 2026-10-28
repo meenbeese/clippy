@@ -25,20 +25,20 @@ enum AgentConverterError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noCharacterFile(let url):
-            return "No .acd character file found in \(url.lastPathComponent)."
-        case .noImages(let url):
-            return "No numbered .bmp sprites found in \(url.path)/Images."
-        case .unreadableImage(let url):
-            return "Could not read sprite \(url.lastPathComponent)."
+        case let .noCharacterFile(url):
+            "No .acd character file found in \(url.lastPathComponent)."
+        case let .noImages(url):
+            "No numbered .bmp sprites found in \(url.path)/Images."
+        case let .unreadableImage(url):
+            "Could not read sprite \(url.lastPathComponent)."
         case .inconsistentSpriteSizes:
-            return "Sprites differ in size; this is not a supported sprite."
-        case .noSounds(let url):
-            return "No .wav sounds found in \(url.path)/Audio."
-        case .unusableSound(let url):
-            return "Could not read sound \(url.lastPathComponent)."
+            "Sprites differ in size; this is not a supported sprite."
+        case let .noSounds(url):
+            "No .wav sounds found in \(url.path)/Audio."
+        case let .unusableSound(url):
+            "Could not read sound \(url.lastPathComponent)."
         case .emptyName:
-            return "The sprite name may not be empty."
+            "The sprite name may not be empty."
         }
     }
 }
@@ -101,9 +101,9 @@ enum AgentConverter {
 
     /// Decompilers emit `.acd` files as ISO-8859-1; the parser reads UTF-8, so
     /// the agent's localized names survive only if they are transcoded here.
-    private static func writeCharacterDefinition(from sourceURL: URL, to destinationURL: URL, name: String) throws {
+    private static func writeCharacterDefinition(from sourceURL: URL, to destinationURL: URL, name _: String) throws {
         let candidates = try FileManager.default.contentsOfDirectory(at: sourceURL,
-                                                                    includingPropertiesForKeys: nil)
+                                                                     includingPropertiesForKeys: nil)
             .filter { $0.pathExtension.lowercased() == "acd" }
             .sorted { $0.lastPathComponent < $1.lastPathComponent }
 
@@ -111,11 +111,10 @@ enum AgentConverter {
 
         // Latin-1 decodes any byte, so it is also the safe fallback for a file
         // that is already UTF-8 but carries a stray invalid byte.
-        let text: String
-        if let latin1 = try? String(contentsOf: source, encoding: .isoLatin1) {
-            text = latin1
+        let text: String = if let latin1 = try? String(contentsOf: source, encoding: .isoLatin1) {
+            latin1
         } else {
-            text = try String(contentsOf: source, encoding: .utf8)
+            try String(contentsOf: source, encoding: .utf8)
         }
         try text.write(to: destinationURL, atomically: true, encoding: .utf8)
     }
@@ -155,7 +154,8 @@ enum AgentConverter {
     /// and scramble the whole map.
     private static func numberedSprites(in imagesURL: URL) throws -> [URL] {
         guard let contents = try? FileManager.default.contentsOfDirectory(at: imagesURL,
-                                                                         includingPropertiesForKeys: nil) else {
+                                                                          includingPropertiesForKeys: nil)
+        else {
             return []
         }
         return contents
@@ -196,7 +196,8 @@ enum AgentConverter {
 
         let keyRed = pixels[0], keyGreen = pixels[1], keyBlue = pixels[2]
         for index in stride(from: 0, to: pixels.count, by: 4)
-        where pixels[index] == keyRed && pixels[index + 1] == keyGreen && pixels[index + 2] == keyBlue {
+            where pixels[index] == keyRed && pixels[index + 1] == keyGreen && pixels[index + 2] == keyBlue
+        {
             pixels[index + 3] = 0
         }
 
@@ -250,8 +251,9 @@ enum AgentConverter {
     private static func convertSounds(from sourceURL: URL, to soundsURL: URL, name: String) throws {
         let audioURL = sourceURL.appendingPathComponent("Audio")
         guard let contents = try? FileManager.default.contentsOfDirectory(at: audioURL,
-                                                                         includingPropertiesForKeys: nil),
-              !contents.isEmpty else {
+                                                                          includingPropertiesForKeys: nil),
+            !contents.isEmpty
+        else {
             throw AgentConverterError.noSounds(sourceURL)
         }
 
@@ -260,8 +262,8 @@ enum AgentConverter {
         for url in contents {
             let fileName = url.lastPathComponent
             guard let match = soundNumberPattern.firstMatch(in: fileName,
-                                                             range: NSRange(fileName.startIndex..., in: fileName)),
-                  let numberRange = Range(match.range(at: 1), in: fileName) else { continue }
+                                                            range: NSRange(fileName.startIndex..., in: fileName)),
+                let numberRange = Range(match.range(at: 1), in: fileName) else { continue }
 
             let destination = soundsURL.appendingPathComponent("\(name)_\(fileName[numberRange]).m4a")
             do {
@@ -330,10 +332,18 @@ enum AgentConverter {
                 return inputBuffer
             }
 
-            if let conversionError { throw conversionError }
-            if outputBuffer.frameLength > 0 { try output.write(from: outputBuffer) }
-            if status == .endOfStream { break }
-            if status == .error { throw AgentConverterError.unusableSound(sourceURL) }
+            if let conversionError {
+                throw conversionError
+            }
+            if outputBuffer.frameLength > 0 {
+                try output.write(from: outputBuffer)
+            }
+            if status == .endOfStream {
+                break
+            }
+            if status == .error {
+                throw AgentConverterError.unusableSound(sourceURL)
+            }
         }
     }
 }

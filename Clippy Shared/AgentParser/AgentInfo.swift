@@ -21,9 +21,9 @@ extension AgentInfo {
         var name: String?
         var description: String?
         var extraData: String?
-        
-        content.enumerateLines(invoking: { (line: String, stop: inout Bool) in
-            let trimmedLine = line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+
+        content.enumerateLines { line, _ in
+            let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedLine.starts(with: "DefineInfo ") {
                 language = trimmedLine.stringValueOfDefinition(onKey: "DefineInfo")
             }
@@ -36,9 +36,9 @@ extension AgentInfo {
             if trimmedLine.starts(with: "ExtraData ") {
                 extraData = trimmedLine.stringValueOfKeyValue(onKey: "ExtraData")?.removedQuotes()
             }
-        })
-        
-        if let language = language, let name = name, let description = description, let extraData = extraData {
+        }
+
+        if let language, let name, let description, let extraData {
             return AgentInfo(language: language, name: name, description: description, extraData: extraData)
         }
         return nil

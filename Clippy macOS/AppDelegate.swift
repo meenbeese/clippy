@@ -18,9 +18,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var opacityMenuItem: NSMenuItem?
     var aboutWindowController: AboutWindowController?
     static var agentController: AgentController?
-    
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
-        
+
+    func applicationDidFinishLaunching(_: Notification) {
         window = AgentWindow(contentRect: CGRect.zero, styleMask: [], backing: .buffered, defer: true)
         window?.title = applicationName
         window?.contentViewController = AgentViewController()
@@ -29,18 +28,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         // The sprite window takes its default bottom-right position once the
         // first agent load has given it its real size; see `resizeWindow`.
-        
+
         setupStatusBar()
     }
-    
-    func applicationWillTerminate(_ aNotification: Notification) {
+
+    func applicationWillTerminate(_: Notification) {
         // Insert code here to tear down your application
     }
-    
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-        return true
+
+    func applicationShouldTerminateAfterLastWindowClosed(_: NSApplication) -> Bool {
+        true
     }
-    
+
     func setupStatusBar() {
         let statusBar = NSStatusBar.system
         statusItem = statusBar.statusItem(withLength: NSStatusItem.squareLength)
@@ -49,10 +48,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             button.toolTip = applicationName
             setStatusBarIcon(on: button)
         }
-        
+
         setupStatusBarMenu()
     }
-    
+
     /// An SF Symbol keeps the icon legible against both the light and the dark
     /// menu bar. `NSImage(systemSymbolName:)` already hands back a template
     /// image, but the flag is set explicitly — template rendering is what makes
@@ -65,11 +64,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         symbol?.isTemplate = true
         button.image = symbol
     }
-    
+
     func createAgentsMenu() -> NSMenu {
         let agentsMenu = NSMenu(title: "Sprites")
         let agentNames = Agent.agentNames()
-        
+
         if agentNames.isEmpty {
             agentsMenu.addItem(withTitle: "No Sprites found.",
                                action: nil,
@@ -86,16 +85,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         agentsMenu.addItem(NSMenuItem.separator())
         let reloadItem = agentsMenu.addItem(withTitle: "Reload",
-                           action: #selector(reloadAction(sender:)),
-                           keyEquivalent: "")
+                                            action: #selector(reloadAction(sender:)),
+                                            keyEquivalent: "")
         addShortcut(reloadItem, key: "r")
         return agentsMenu
     }
-    
+
     func createZoomMenu() -> NSMenu {
         let zoomMenu = NSMenu(title: "Zoom")
         let scale = AppDelegate.agentController?.scale ?? 1.0
-        
+
         for preset in AgentController.scalePresets {
             let item = NSMenuItem(title: "\(Int((preset * 100).rounded()))%",
                                   action: #selector(setScaleAction(sender:)),
@@ -106,11 +105,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         return zoomMenu
     }
-    
+
     func createOpacityMenu() -> NSMenu {
         let opacityMenu = NSMenu(title: "Opacity")
         let opacity = AppDelegate.agentController?.opacity ?? 0.5
-        
+
         for preset in AgentController.opacityPresets {
             let item = NSMenuItem(title: "\(Int((preset * 100).rounded()))%",
                                   action: #selector(setOpacityAction(sender:)),
@@ -121,7 +120,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         return opacityMenu
     }
-    
+
     func addShortcut(_ item: NSMenuItem, key: String, shift: Bool = true) {
         item.keyEquivalent = key
         item.keyEquivalentModifierMask = shift ? [.command, .shift] : [.command]
@@ -135,79 +134,79 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         opacityMenuItem = NSMenuItem(title: "Opacity", action: nil, keyEquivalent: "")
         guard let menuItem = agentsMenuItem,
               let zoomItem = zoomMenuItem,
-              let opacityItem = opacityMenuItem else  { return }
-        
+              let opacityItem = opacityMenuItem else { return }
+
         let showItem = statusBarMenu.addItem(withTitle: "Show", action: #selector(showAction(sender:)), keyEquivalent: "")
         addShortcut(showItem, key: "s")
         let hideStatusBarItem = statusBarMenu.addItem(withTitle: "Hide", action: #selector(hideAction(sender:)), keyEquivalent: "")
         addShortcut(hideStatusBarItem, key: "h")
 
-        /// Built explicitly so the restored mute state gets its checkmark, which
-        /// `toggleMuteAction` alone can only ever set on the item that was clicked.
+        // Built explicitly so the restored mute state gets its checkmark, which
+        // `toggleMuteAction` alone can only ever set on the item that was clicked.
         let muteItem = NSMenuItem(title: "Mute", action: #selector(toggleMuteAction(sender:)), keyEquivalent: "")
         muteItem.state = AppDelegate.agentController?.isMuted == true ? .on : .off
         addShortcut(muteItem, key: "m")
         statusBarMenu.addItem(muteItem)
-        
+
         statusBarMenu.addItem(zoomItem)
         statusBarMenu.addItem(opacityItem)
         statusBarMenu.addItem(NSMenuItem.separator())
         statusBarMenu.addItem(menuItem)
         let addSpriteItem = statusBarMenu.addItem(withTitle: "Add Sprite…",
-                           action: #selector(addAgentAction(sender:)),
-                           keyEquivalent: "")
+                                                  action: #selector(addAgentAction(sender:)),
+                                                  keyEquivalent: "")
         addShortcut(addSpriteItem, key: "n")
         let showInFinderItem = statusBarMenu.addItem(withTitle: "Show in Finder",
-                           action: #selector(openFolderAction(sender:)),
-                           keyEquivalent: "")
+                                                     action: #selector(openFolderAction(sender:)),
+                                                     keyEquivalent: "")
         addShortcut(showInFinderItem, key: "f")
         statusBarMenu.addItem(NSMenuItem.separator())
         statusBarMenu.addItem(withTitle: "About \(applicationName)",
-                           action: #selector(aboutAction(sender:)),
-                           keyEquivalent: "")
+                              action: #selector(aboutAction(sender:)),
+                              keyEquivalent: "")
         statusBarMenu.addItem(NSMenuItem.separator())
         let quitItem = statusBarMenu.addItem(withTitle: "Quit \(applicationName)", action: #selector(quitAction(sender:)), keyEquivalent: "")
         addShortcut(quitItem, key: "q", shift: false)
-        
+
         // Agents menu
         statusBarMenu.setSubmenu(createAgentsMenu(), for: menuItem)
         // Zoom menu
         statusBarMenu.setSubmenu(createZoomMenu(), for: zoomItem)
         // Opacity menu
         statusBarMenu.setSubmenu(createOpacityMenu(), for: opacityItem)
-                statusItem?.menu = statusBarMenu
+        statusItem?.menu = statusBarMenu
     }
-    
-    @objc func quitAction(sender: AnyObject) {
+
+    @objc func quitAction(sender _: AnyObject) {
         NSApplication.shared.terminate(self)
     }
-    
+
     /// The app is an `LSUIElement`, so the panel has to be activated explicitly
     /// to land in front of whatever the user is working in.
-    @objc func aboutAction(sender: AnyObject) {
+    @objc func aboutAction(sender _: AnyObject) {
         NSApp.activate(ignoringOtherApps: true)
         if aboutWindowController == nil {
             aboutWindowController = AboutWindowController()
         }
         aboutWindowController?.window?.makeKeyAndOrderFront(self)
     }
-    
-    @objc func reloadAction(sender: AnyObject) {
+
+    @objc func reloadAction(sender _: AnyObject) {
         agentsMenuItem?.submenu = createAgentsMenu()
     }
-    
-    @objc func openFolderAction(sender: AnyObject) {
+
+    @objc func openFolderAction(sender _: AnyObject) {
         NSWorkspace.shared.open(Agent.agentsURL())
     }
-    
-    @objc func hideAction(sender: AnyObject) {
+
+    @objc func hideAction(sender _: AnyObject) {
         AppDelegate.agentController?.hide()
     }
-    
-    @objc func showAction(sender: AnyObject) {
+
+    @objc func showAction(sender _: AnyObject) {
         window?.makeKeyAndOrderFront(self)
     }
-    
+
     @objc func toggleMuteAction(sender: AnyObject) {
         guard let menuItem = sender as? NSMenuItem,
               let isMuted = AppDelegate.agentController?.isMuted else { return }
@@ -215,25 +214,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         AppDelegate.agentController?.setMuted(newValue)
         menuItem.state = newValue ? .on : .off
     }
-    
+
     @objc func setScaleAction(sender: AnyObject) {
         guard let menuItem = sender as? NSMenuItem,
               let scale = menuItem.representedObject as? CGFloat else { return }
         AppDelegate.agentController?.setScale(scale)
         zoomMenuItem?.submenu = createZoomMenu()
     }
-    
+
     @objc func setOpacityAction(sender: AnyObject) {
         guard let menuItem = sender as? NSMenuItem,
               let opacity = menuItem.representedObject as? CGFloat else { return }
         AppDelegate.agentController?.setOpacity(opacity)
         opacityMenuItem?.submenu = createOpacityMenu()
     }
-    
+
     @objc func selectAgent(sender: AnyObject) {
         guard let menuItem = sender as? NSMenuItem else { return }
         let name = menuItem.title.lowercased()
-        
+
         if window?.isVisible == true {
             AppDelegate.agentController?.load(name: name)
             if let animation = AppDelegate.agentController?.agent?.findAnimation("Show") {
@@ -243,7 +242,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             AppDelegate.agentController?.lastUsedAgent = name
             window?.makeKeyAndOrderFront(self)
         }
-        
+
         agentsMenuItem?.submenu = createAgentsMenu()
     }
 }

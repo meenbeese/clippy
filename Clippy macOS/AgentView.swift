@@ -21,7 +21,7 @@ class AgentView: NSView {
         skView.setAccessibilityElement(false)
         return skView
     }()
-    
+
     lazy var scene: SKScene = {
         let scene = SKScene(size: frame.size)
         scene.scaleMode = .resizeFill
@@ -29,14 +29,14 @@ class AgentView: NSView {
         scene.addChild(agentSprite)
         return scene
     }()
-    
+
     lazy var agentSprite: SKSpriteNode = {
         let sprite = SKSpriteNode()
         sprite.position = CGPoint.zero
         sprite.anchorPoint = CGPoint.zero
         return sprite
     }()
-    
+
     /// Zoom factor relative to the size the agent already has.
     ///
     /// `SKSpriteNode.size` only affects `frame` and physics bodies, never how the
@@ -47,12 +47,12 @@ class AgentView: NSView {
             applyScale()
         }
     }
-    
+
     private func applyScale() {
         agentSprite.xScale = agentScale
         agentSprite.yScale = agentScale
     }
-    
+
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true
@@ -85,17 +85,18 @@ class AgentView: NSView {
         pressAction()
         return true
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func layout() {
         super.layout()
-        
+
         agentSprite.size = frame.size
     }
-    
+
     func setupConstraints() {
         skView.translatesAutoresizingMaskIntoConstraints = false
         skView.topAnchor.constraint(equalTo: topAnchor).isActive = true
@@ -103,5 +104,4 @@ class AgentView: NSView {
         rightAnchor.constraint(equalTo: skView.rightAnchor).isActive = true
         bottomAnchor.constraint(equalTo: skView.bottomAnchor).isActive = true
     }
-
 }

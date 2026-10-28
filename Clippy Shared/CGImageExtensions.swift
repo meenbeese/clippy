@@ -6,23 +6,23 @@
 //  Copyright © 2026 Kuzey Bilgin. All rights reserved.
 //
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 extension CGImage {
     static func mergeImages(_ images: [CGImage]) -> CGImage? {
         guard let firstImage = images.first else { return nil }
         let width = firstImage.width
         let height = firstImage.height
-        
-        guard let colorSpace = CGColorSpace(name: CGColorSpace.genericRGBLinear) else { return nil }
-        guard let context = CGContext(data: nil,
-                                      width: width,
-                                      height: height,
-                                      bitsPerComponent: 8,
-                                      bytesPerRow: 0,
-                                      space: colorSpace,
-                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
+
+        guard let colorSpace = CGColorSpace(name: CGColorSpace.genericRGBLinear), let context = CGContext(data: nil,
+                                                                                                          width: width,
+                                                                                                          height: height,
+                                                                                                          bitsPerComponent: 8,
+                                                                                                          bytesPerRow: 0,
+                                                                                                          space: colorSpace,
+                                                                                                          bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+        else {
             return nil
         }
         for image in images {

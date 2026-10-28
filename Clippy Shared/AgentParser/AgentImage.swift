@@ -17,14 +17,14 @@ struct AgentImage {
 extension AgentImage {
     static func parse(content: String) -> AgentImage? {
         var fileName: String?
-        content.enumerateLines(invoking: { (line: String, stop: inout Bool) in
-            let trimmedLine = line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        content.enumerateLines { line, _ in
+            let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedLine.starts(with: "Filename ") {
                 fileName = trimmedLine.stringValueOfKeyValue(onKey: "Filename")?.removedQuotes()
             }
-        })
-        
-        if let fileName = fileName {
+        }
+
+        if let fileName {
             return AgentImage(fileName: fileName)
         }
         return nil

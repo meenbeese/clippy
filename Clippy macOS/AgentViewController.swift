@@ -12,14 +12,16 @@ class AgentViewController: NSViewController {
     var agentController: AgentController
     var agentView: AgentView
     var balloonWindow: SpeechBalloonWindow?
-    var balloonDismissWorkItem: DispatchWorkItem?
-    /// Idle chatter scheduling. A non-`nil` work item is the scheduled next
-    /// line; cancelling and clearing it pauses the chatter entirely.
-    var idleChatterWorkItem: DispatchWorkItem?
+    /// Dismissal timer for the current balloon. Cancelling the task closes
+    /// nothing; the task itself closes the balloon when it finishes sleeping.
+    var balloonDismissTask: Task<Void, Never>?
+    /// Idle chatter scheduling. A non-`nil` task is the scheduled next line;
+    /// cancelling it pauses the chatter entirely.
+    var idleChatterTask: Task<Void, Never>?
     /// Shuffled deck of idle tips, so a line repeats only after the whole
     /// cycle has been spoken once.
     var idleLineDeck: [String] = []
-    
+
     init() {
         agentView = AgentView()
         agentController = AgentController(agentView: agentView)
@@ -27,18 +29,19 @@ class AgentViewController: NSViewController {
         super.init(nibName: nil, bundle: nil)
         agentController.delegate = self
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func loadView() {
         let size = CGSize(width: 100, height: 200)
         view = NSView(frame: CGRect(origin: CGPoint.zero, size: size))
         view.wantsLayer = true
         view.layer?.backgroundColor = .clear
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(agentView)
@@ -50,17 +53,16 @@ class AgentViewController: NSViewController {
             speakRandomBalloonLine()
         }
     }
-    
-    
+
     override func viewDidAppear() {
         super.viewDidAppear()
         view.window?.makeFirstResponder(self)
-        
+
         // Restored settings are applied here rather than from `AppDelegate` because
         // this is the first point where the window is known to exist, and it happens
         // before the first load so the sprite is never drawn at the wrong size.
         agentController.applyRestoredSettings()
-        
+
         let name = agentController.lastUsedAgent ?? Agent.randomAgentName()
         if let name {
             agentController.load(name: name)
@@ -68,7 +70,7 @@ class AgentViewController: NSViewController {
         }
         restartIdleChatter()
     }
-    
+
     func setupConstraints() {
         agentView.translatesAutoresizingMaskIntoConstraints = false
         agentView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -76,7 +78,7 @@ class AgentViewController: NSViewController {
         view.rightAnchor.constraint(equalTo: agentView.rightAnchor).isActive = true
         view.bottomAnchor.constraint(equalTo: agentView.bottomAnchor).isActive = true
     }
-    
+
     func setupTrackingArea() {
         let options: NSTrackingArea.Options = [.mouseEnteredAndExited, .inVisibleRect, .activeAlways]
         let trackingArea = NSTrackingArea(rect: view.frame, options: options, owner: self, userInfo: nil)
@@ -85,12 +87,12 @@ class AgentViewController: NSViewController {
 }
 
 extension AgentViewController {
-    override func mouseEntered(with event: NSEvent) {
+    override func mouseEntered(with _: NSEvent) {
         (view.superview?.window as? AgentWindow)?.applyAlpha(isForeground: true)
         restartIdleChatter()
     }
 
-    override func mouseExited(with event: NSEvent) {
+    override func mouseExited(with _: NSEvent) {
         (view.superview?.window as? AgentWindow)?.applyAlpha(isForeground: false)
     }
 
@@ -126,13 +128,13 @@ extension AgentViewController {
             super.keyDown(with: event)
             return
         }
-        
+
         // Space is printable, so it has no `SpecialKey` of its own.
         if event.charactersIgnoringModifiers == " " {
             agentController.animate()
             return
         }
-        
+
         switch event.specialKey {
         case .carriageReturn, .enter:
             guard let name = Agent.randomAgentName() else { return }
@@ -150,7 +152,7 @@ extension AgentViewController {
             super.keyDown(with: event)
         }
     }
-    
+
     override func mouseDown(with event: NSEvent) {
         restartIdleChatter()
         if event.clickCount == 2 {
@@ -161,8 +163,8 @@ extension AgentViewController {
 
     override func rightMouseDown(with event: NSEvent) {
         restartIdleChatter()
-        guard let _ = agentController.agent else { return }
-        
+        guard agentController.agent != nil else { return }
+
         let menu = NSMenu(title: "Sprite")
         let hideItem = NSMenuItem(title: "Hide",
                                   action: #selector(hideAction(sender:)),
@@ -185,7 +187,7 @@ extension AgentViewController {
         menu.addItem(animateItem)
         NSMenu.popUpContextMenu(menu, with: event, for: agentView)
     }
-    
+
     /// Classic Office Assistant lines for the balloon, shown when the sprite
     /// animates on demand.
     private static let balloonLines = [
@@ -231,20 +233,23 @@ extension AgentViewController {
     /// goes through here first, so the plan for the next chatter only exists
     /// while the last one has a chance to fire quietly.
     func restartIdleChatter() {
-        idleChatterWorkItem?.cancel()
-        let chatter = DispatchWorkItem { [weak self] in
+        idleChatterTask?.cancel()
+        // The task inherits the view controller's main actor, so the chat is
+        // always spoken on the thread that owns the windows. Sleeping does not
+        // block that thread.
+        idleChatterTask = Task { [weak self] in
+            let delay = TimeInterval.random(in: Self.idleChatterMinDelay ... Self.idleChatterMaxDelay)
+            try? await Task.sleep(for: .seconds(delay))
+            guard !Task.isCancelled else { return }
             self?.speakIdleLine()
         }
-        idleChatterWorkItem = chatter
-        let delay = TimeInterval.random(in: Self.idleChatterMinDelay...Self.idleChatterMaxDelay)
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: chatter)
     }
 
     /// Drops the scheduled idle line without re-arming; used while Clippy is
     /// hidden, so a visually absent assistant does not keep chattering.
     func stopIdleChatter() {
-        idleChatterWorkItem?.cancel()
-        idleChatterWorkItem = nil
+        idleChatterTask?.cancel()
+        idleChatterTask = nil
     }
 
     private static let idleChatterMinDelay: TimeInterval = 2 * 60
@@ -254,8 +259,8 @@ extension AgentViewController {
         defer { restartIdleChatter() }
         // Reduce Motion suppresses the animations that accompany the lines;
         // a repeated static sprite popping up text would only distract.
-        guard !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion else { return }
-        guard let window = view.superview?.window, window.isVisible,
+        guard !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
+              let window = view.superview?.window, window.isVisible,
               !agentController.isHidden, agentController.agent != nil,
               balloonWindow == nil else { return }
         if idleLineDeck.isEmpty {
@@ -271,23 +276,23 @@ extension AgentViewController {
         agentController.speak(line)
     }
 
-    @objc func animateAction(sender: AnyObject) {
+    @objc func animateAction(sender _: AnyObject) {
         agentController.animate()
         speakRandomBalloonLine()
     }
 
-    @objc func hideAction(sender: AnyObject) {
+    @objc func hideAction(sender _: AnyObject) {
         agentController.hide()
     }
-    
-    @objc func optionsAction(sender: AnyObject) {
+
+    @objc func optionsAction(sender _: AnyObject) {
         let viewController = BalloonViewController(nibName: nil, bundle: nil)
         let popOver = NSPopover()
         popOver.behavior = .semitransient
         popOver.contentSize = CGSize(width: 200, height: 300)
         popOver.animates = !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         popOver.contentViewController = viewController
-        let rect = self.view.frame
+        let rect = view.frame
         popOver.show(relativeTo: rect, of: view, preferredEdge: NSRectEdge.maxY)
     }
 }

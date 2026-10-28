@@ -9,7 +9,7 @@
 import SpriteKit
 
 class GhostSKView: SKView {
-    open override func hitTest(_ point: NSPoint) -> NSView? {
-        return superview
+    override open func hitTest(_: NSPoint) -> NSView? {
+        superview
     }
 }

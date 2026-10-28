@@ -20,39 +20,39 @@ extension String {
     /// - Returns: `nil` unless the line actually is a definition of `key`, so a
     ///   value that merely mentions the key cannot be mistaken for one.
     func stringValueOfDefinition(onKey key: String) -> String? {
-        let trimmedString = self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        let trimmedString = trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         let prefix = "\(key) "
         guard trimmedString.hasPrefix(prefix) else { return nil }
         return String(trimmedString.dropFirst(prefix.count))
     }
-    
+
     /// The value of a `key = value` line, e.g. `Width = 124` -> `124`.
     ///
     /// - Returns: `nil` unless the line actually assigns to `key`.
     func stringValueOfKeyValue(onKey key: String) -> String? {
-        let trimmedString = self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        let trimmedString = trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         let prefix = "\(key) = "
         guard trimmedString.hasPrefix(prefix) else { return nil }
         return String(trimmedString.dropFirst(prefix.count))
     }
-    
+
     func intValueOfKeyValue(onKey key: String) -> Int? {
-        return stringValueOfKeyValue(onKey: key).flatMap(Int.init)
+        stringValueOfKeyValue(onKey: key).flatMap(Int.init)
     }
 
     func removedQuotes() -> String {
-        return trimmingCharacters(in: .whitespacesAndNewlines.union(quoteCharacters))
+        trimmingCharacters(in: .whitespacesAndNewlines.union(quoteCharacters))
     }
-    
+
     func removedCurlyBraces() -> String {
-        return trimmingCharacters(in: .whitespacesAndNewlines.union(braceCharacters))
+        trimmingCharacters(in: .whitespacesAndNewlines.union(braceCharacters))
     }
-    
+
     func fetchInclusive(_ from: String, until: String) -> [String] {
         var elements: [String] = []
         var lastElement = ""
         var isAppending = false
-        self.enumerateLines(invoking: { (line: String, stop: inout Bool) in
+        enumerateLines { line, _ in
             if line.contains(from) {
                 isAppending = true
             }
@@ -64,7 +64,7 @@ extension String {
                 elements.append(lastElement)
                 lastElement = ""
             }
-        })
+        }
         return elements
     }
 }

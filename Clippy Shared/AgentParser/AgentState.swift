@@ -17,19 +17,17 @@ extension AgentState {
     static func parse(content: String) -> AgentState? {
         var name: String?
         var animationNames: [String] = []
-        content.enumerateLines(invoking: { (line: String, stop: inout Bool) in
-            let trimmedLine = line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        content.enumerateLines { line, _ in
+            let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmedLine.starts(with: "DefineState ") {
                 name = trimmedLine.stringValueOfDefinition(onKey: "DefineState")?.removedQuotes()
             }
-            if trimmedLine.starts(with: "Animation ") {
-                if let animationName = trimmedLine.stringValueOfKeyValue(onKey: "Animation")?.removedQuotes() {
-                    animationNames.append(animationName)
-                }
+            if trimmedLine.starts(with: "Animation "), let animationName = trimmedLine.stringValueOfKeyValue(onKey: "Animation")?.removedQuotes() {
+                animationNames.append(animationName)
             }
-        })
-        
-        if let name = name {
+        }
+
+        if let name {
             return AgentState(name: name, animationNames: animationNames)
         }
         return nil

@@ -11,7 +11,6 @@ import Cocoa
 /// The bubble sits above the sprite and refers to it with a small tail.
 @MainActor
 final class SpeechBalloonView: NSView {
-
     private let text: NSAttributedString
     private let balloon: AgentBalloon
     private let font: NSFont
@@ -45,15 +44,16 @@ final class SpeechBalloonView: NSView {
         // estimated from how wide this text actually renders.
         let textSize = (text as NSString).size(withAttributes: [.font: font])
         let averageCharacterWidth = text.isEmpty ? font.pointSize / 2
-                                                 : textSize.width / CGFloat(text.count)
+            : textSize.width / CGFloat(text.count)
         let bubbleWidth = min(320, max(120,
-            CGFloat(balloon.charactersPerLine) * averageCharacterWidth + 2 * Self.padding))
+                                       CGFloat(balloon.charactersPerLine) * averageCharacterWidth + 2 * Self.padding))
         let textWidth = bubbleWidth - 2 * Self.padding
         // Measure with the exact options used at draw time; any missing option
         // (font leading in particular) clips the last line off the bubble.
         let wrapped = self.text.boundingRect(
             with: NSSize(width: textWidth, height: .greatestFiniteMagnitude),
-            options: Self.drawOptions)
+            options: Self.drawOptions
+        )
         let minHeight = CGFloat(balloon.numberOfLines) * font.boundingRectForFont.height
         let bubbleHeight = max(minHeight, ceil(wrapped.height) + 4) + 2 * Self.padding
 
@@ -63,7 +63,8 @@ final class SpeechBalloonView: NSView {
                                  height: bubbleHeight + Self.tailHeight))
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -80,7 +81,8 @@ final class SpeechBalloonView: NSView {
     /// MSAgent stores balloon colors as OLE `COLORREF`: `00BBGGRR` in hex.
     private static func color(from colorRef: String, fallback: NSColor) -> NSColor {
         guard colorRef.count == 8,
-              let value = UInt32(colorRef, radix: 16) else {
+              let value = UInt32(colorRef, radix: 16)
+        else {
             return fallback
         }
         let red = value & 0xFF
@@ -92,7 +94,7 @@ final class SpeechBalloonView: NSView {
                        alpha: 1.0)
     }
 
-    override func draw(_ dirtyRect: NSRect) {
+    override func draw(_: NSRect) {
         NSColor.clear.setFill()
         bounds.fill()
 
@@ -139,7 +141,6 @@ final class SpeechBalloonView: NSView {
 /// above the sprite window and moves with it as a child window.
 @MainActor
 final class SpeechBalloonWindow: NSWindow {
-
     init(text: String, balloon: AgentBalloon) {
         let content = SpeechBalloonView(text: text, balloon: balloon)
         super.init(contentRect: NSRect(origin: .zero, size: content.bounds.size),

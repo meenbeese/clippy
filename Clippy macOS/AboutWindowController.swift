@@ -8,7 +8,6 @@
 import Cocoa
 
 final class AboutViewController: NSViewController {
-
     private let githubURL = URL(string: "https://github.com/meenbeese/clippy")!
 
     override func loadView() {
@@ -109,13 +108,12 @@ final class AboutViewController: NSViewController {
         return label
     }
 
-    @objc func openGitHub(sender: AnyObject) {
+    @objc func openGitHub(sender _: AnyObject) {
         NSWorkspace.shared.open(githubURL)
     }
 }
 
 final class AboutWindowController: NSWindowController {
-
     convenience init() {
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 420, height: 520),
                               styleMask: [.titled, .closable, .fullSizeContentView],
