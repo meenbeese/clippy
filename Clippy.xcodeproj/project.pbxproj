@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		453D7F7F231F189600995AB3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453D7F7E231F189600995AB3 /* AppDelegate.swift */; };
-		453D7F87231F189600995AB3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 453D7F85231F189600995AB3 /* LaunchScreen.storyboard */; };
 		453D7F90231F189600995AB3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453D7F8F231F189600995AB3 /* AppDelegate.swift */; };
 		45491A592325D842007E04E2 /* AgentBalloonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45491A582325D842007E04E2 /* AgentBalloonViewController.swift */; };
 		45491A652325E8CA007E04E2 /* clippit.agent.zip in Resources */ = {isa = PBXBuildFile; fileRef = 45491A622325E8CA007E04E2 /* clippit.agent.zip */; };
@@ -16,33 +14,23 @@
 		45491A672325E8CA007E04E2 /* links.agent.zip in Resources */ = {isa = PBXBuildFile; fileRef = 45491A642325E8CA007E04E2 /* links.agent.zip */; };
 		456FDA56231FA3E900170E12 /* GhostSKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456FDA55231FA3E900170E12 /* GhostSKView.swift */; };
 		456FDA57231FB8B100170E12 /* AgentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453D7FC1231F90DA00995AB3 /* AgentViewController.swift */; };
-		459AC4942325799600C43B06 /* CGImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AC4932325799600C43B06 /* CGImageExtensions.swift */; };
 		459AC4952325799600C43B06 /* CGImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459AC4932325799600C43B06 /* CGImageExtensions.swift */; };
 		45A72A692322396B007DE9DA /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72A6723223968007DE9DA /* Agent.swift */; };
-		45A72B5A23235FCB007DE9DA /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B5923235FCB007DE9DA /* StringExtensions.swift */; };
 		45A72B5B23235FCB007DE9DA /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B5923235FCB007DE9DA /* StringExtensions.swift */; };
-		45A72B5D2323602A007DE9DA /* AgentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B5C2323602A007DE9DA /* AgentInfo.swift */; };
 		45A72B5E2323602A007DE9DA /* AgentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B5C2323602A007DE9DA /* AgentInfo.swift */; };
 		45A72B6023236038007DE9DA /* AgentBalloon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B5F23236038007DE9DA /* AgentBalloon.swift */; };
 		45A72B6123236038007DE9DA /* AgentBalloon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B5F23236038007DE9DA /* AgentBalloon.swift */; };
-		45A72B6323236047007DE9DA /* AgentBranching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B6223236047007DE9DA /* AgentBranching.swift */; };
 		45A72B6423236047007DE9DA /* AgentBranching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B6223236047007DE9DA /* AgentBranching.swift */; };
-		45A72B6623236055007DE9DA /* AgentFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B6523236055007DE9DA /* AgentFrame.swift */; };
 		45A72B6723236055007DE9DA /* AgentFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B6523236055007DE9DA /* AgentFrame.swift */; };
-		45A72B6923236064007DE9DA /* AgentAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B6823236064007DE9DA /* AgentAnimation.swift */; };
 		45A72B6A23236064007DE9DA /* AgentAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B6823236064007DE9DA /* AgentAnimation.swift */; };
-		45A72B6C23236076007DE9DA /* AgentCharacter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B6B23236076007DE9DA /* AgentCharacter.swift */; };
 		45A72B6D23236076007DE9DA /* AgentCharacter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B6B23236076007DE9DA /* AgentCharacter.swift */; };
-		45A72B6F232366C9007DE9DA /* AgentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B6E232366C9007DE9DA /* AgentImage.swift */; };
 		45A72B70232366C9007DE9DA /* AgentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B6E232366C9007DE9DA /* AgentImage.swift */; };
-		45A72B7223237B29007DE9DA /* AgentState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B7123237B29007DE9DA /* AgentState.swift */; };
 		45A72B7323237B29007DE9DA /* AgentState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A72B7123237B29007DE9DA /* AgentState.swift */; };
 		45FF387F23242BA500F724B7 /* AgentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FF387E23242BA500F724B7 /* AgentView.swift */; };
 		45FF38812324327800F724B7 /* AgentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FF38802324327800F724B7 /* AgentController.swift */; };
 		45FF388323243E0400F724B7 /* AgentWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FF388223243E0400F724B7 /* AgentWindow.swift */; };
 		45FF38982325240600F724B7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FF38972325240600F724B7 /* main.swift */; };
 		45FF389C23253CAB00F724B7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45FF389B23253CAB00F724B7 /* Assets.xcassets */; };
-		45FF389E23253CD300F724B7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45FF389D23253CD300F724B7 /* Assets.xcassets */; };
 		45FF38A0232541FA00F724B7 /* AgentViewController+AgentControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FF389F232541FA00F724B7 /* AgentViewController+AgentControllerDelegate.swift */; };
 		45FF38A2232542BC00F724B7 /* AgentControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FF38A1232542BC00F724B7 /* AgentControllerDelegate.swift */; };
 		A1C0DE0229A000100000E102 /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE0129A000100000E101 /* AppLog.swift */; };
@@ -55,10 +43,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		453D7F7B231F189600995AB3 /* Clippy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clippy.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		453D7F7E231F189600995AB3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		453D7F86231F189600995AB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		453D7F88231F189600995AB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		453D7F8D231F189600995AB3 /* Clippy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clippy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		453D7F8F231F189600995AB3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		453D7F96231F189600995AB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -85,7 +69,6 @@
 		45FF388223243E0400F724B7 /* AgentWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentWindow.swift; sourceTree = "<group>"; };
 		45FF38972325240600F724B7 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		45FF389B23253CAB00F724B7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		45FF389D23253CD300F724B7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		45FF389F232541FA00F724B7 /* AgentViewController+AgentControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AgentViewController+AgentControllerDelegate.swift"; sourceTree = "<group>"; };
 		45FF38A1232542BC00F724B7 /* AgentControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentControllerDelegate.swift; sourceTree = "<group>"; };
 		A1C0DE0129A000100000E101 /* AppLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
@@ -98,13 +81,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		453D7F78231F189600995AB3 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		453D7F8A231F189600995AB3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -121,7 +97,6 @@
 				45A72A6A232257DB007DE9DA /* README.md */,
 				453D7F72231F189400995AB3 /* Clippy Shared */,
 				453D7F8E231F189600995AB3 /* Clippy macOS */,
-				453D7F7D231F189600995AB3 /* Clippy iOS */,
 				453D7F7C231F189600995AB3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -138,19 +113,9 @@
 		453D7F7C231F189600995AB3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				453D7F7B231F189600995AB3 /* Clippy.app */,
 				453D7F8D231F189600995AB3 /* Clippy.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		453D7F7D231F189600995AB3 /* Clippy iOS */ = {
-			isa = PBXGroup;
-			children = (
-				453D7F7E231F189600995AB3 /* AppDelegate.swift */,
-				453D7FC7231F911D00995AB3 /* Supporting Files */,
-			);
-			path = "Clippy iOS";
 			sourceTree = "<group>";
 		};
 		453D7F8E231F189600995AB3 /* Clippy macOS */ = {
@@ -174,16 +139,6 @@
 				00000000000000001A2B0009 /* SpeechBalloonWindow.swift */,
 			);
 			path = "Clippy macOS";
-			sourceTree = "<group>";
-		};
-		453D7FC7231F911D00995AB3 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				45FF389D23253CD300F724B7 /* Assets.xcassets */,
-				453D7F85231F189600995AB3 /* LaunchScreen.storyboard */,
-				453D7F88231F189600995AB3 /* Info.plist */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		453D7FC8231F912800995AB3 /* Supporting Files */ = {
@@ -228,23 +183,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		453D7F7A231F189600995AB3 /* Clippy iOS */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 453D7FA1231F189600995AB3 /* Build configuration list for PBXNativeTarget "Clippy iOS" */;
-			buildPhases = (
-				453D7F77231F189600995AB3 /* Sources */,
-				453D7F78231F189600995AB3 /* Frameworks */,
-				453D7F79231F189600995AB3 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "Clippy iOS";
-			productName = "Clippy iOS";
-			productReference = 453D7F7B231F189600995AB3 /* Clippy.app */;
-			productType = "com.apple.product-type.application";
-		};
 		453D7F8C231F189600995AB3 /* Clippy macOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 453D7FA4231F189600995AB3 /* Build configuration list for PBXNativeTarget "Clippy macOS" */;
@@ -273,9 +211,6 @@
 				LastUpgradeCheck = 2700;
 				ORGANIZATIONNAME = Devran;
 				TargetAttributes = {
-					453D7F7A231F189600995AB3 = {
-						CreatedOnToolsVersion = 11.0;
-					};
 					453D7F8C231F189600995AB3 = {
 						CreatedOnToolsVersion = 11.0;
 					};
@@ -294,22 +229,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				453D7F7A231F189600995AB3 /* Clippy iOS */,
 				453D7F8C231F189600995AB3 /* Clippy macOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		453D7F79231F189600995AB3 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				45FF389E23253CD300F724B7 /* Assets.xcassets in Resources */,
-				453D7F87231F189600995AB3 /* LaunchScreen.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		453D7F8B231F189600995AB3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -324,26 +249,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		453D7F77231F189600995AB3 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				45A72B5A23235FCB007DE9DA /* StringExtensions.swift in Sources */,
-				45A72B6923236064007DE9DA /* AgentAnimation.swift in Sources */,
-				45A72B6C23236076007DE9DA /* AgentCharacter.swift in Sources */,
-				453D7F7F231F189600995AB3 /* AppDelegate.swift in Sources */,
-				45A72B6F232366C9007DE9DA /* AgentImage.swift in Sources */,
-				459AC4942325799600C43B06 /* CGImageExtensions.swift in Sources */,
-				45A72B6623236055007DE9DA /* AgentFrame.swift in Sources */,
-				45A72B5D2323602A007DE9DA /* AgentInfo.swift in Sources */,
-				45A72B7223237B29007DE9DA /* AgentState.swift in Sources */,
-				45A72B6323236047007DE9DA /* AgentBranching.swift in Sources */,
-				45A72B6023236038007DE9DA /* AgentBalloon.swift in Sources */,
-				00000000000000001A2B0002 /* ZipArchive.swift in Sources */,
-				00000000000000001A2B0004 /* AgentConverter.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		453D7F89231F189600995AB3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -380,17 +285,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		453D7F85231F189600995AB3 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				453D7F86231F189600995AB3 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		453D7F9F231F189600995AB3 /* Debug */ = {
@@ -510,49 +404,6 @@
 			};
 			name = Release;
 		};
-		453D7FA2231F189600995AB3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = iOSAppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Z3ZG8RPGHF;
-				INFOPLIST_FILE = "Clippy iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_IPHONEOS_DEPLOYMENT_TARGET)";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.devranuenal.Clippy;
-				PRODUCT_NAME = Clippy;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEXTURE_ATLAS_MAXIMUM_SIZE = 4096x4096;
-			};
-			name = Debug;
-		};
-		453D7FA3231F189600995AB3 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = iOSAppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Z3ZG8RPGHF;
-				INFOPLIST_FILE = "Clippy iOS/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_IPHONEOS_DEPLOYMENT_TARGET)";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.devranuenal.Clippy;
-				PRODUCT_NAME = Clippy;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEXTURE_ATLAS_MAXIMUM_SIZE = 4096x4096;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		453D7FA5231F189600995AB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -611,15 +462,6 @@
 			buildConfigurations = (
 				453D7F9F231F189600995AB3 /* Debug */,
 				453D7FA0231F189600995AB3 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		453D7FA1231F189600995AB3 /* Build configuration list for PBXNativeTarget "Clippy iOS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				453D7FA2231F189600995AB3 /* Debug */,
-				453D7FA3231F189600995AB3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
