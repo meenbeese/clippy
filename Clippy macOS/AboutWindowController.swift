@@ -125,6 +125,9 @@ final class AboutWindowController: NSWindowController {
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
         window.isMovableByWindowBackground = true
+        // Held strongly by `AppDelegate` and reused, so manual closing must not
+        // free the window while the reference still exists.
+        window.isReleasedWhenClosed = false
         window.contentViewController = AboutViewController()
         window.center()
         self.init(window: window)

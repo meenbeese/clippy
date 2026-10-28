@@ -136,6 +136,9 @@ final class SpeechBalloonWindow: NSWindow {
         hasShadow = false
         ignoresMouseEvents = true
         level = .floating
+        // The view controller keeps a strong reference and reuses/removes this
+        // window; `close()` must not additionally release it out from under ARC.
+        isReleasedWhenClosed = false
         contentView = content
     }
 
